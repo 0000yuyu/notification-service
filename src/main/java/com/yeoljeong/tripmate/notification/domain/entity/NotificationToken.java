@@ -9,12 +9,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name = "p_notification_token")
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NotificationToken extends BaseAuditEntity {
 
   @Id
@@ -30,6 +31,18 @@ public class NotificationToken extends BaseAuditEntity {
 
   @Embedded
   private TokenStatus tokenStatus;
+
+  private NotificationToken(UUID userId, NotificationEndPoint notificationEndPoint,
+      TokenStatus tokenStatus) {
+    this.userId = userId;
+    this.notificationEndPoint = notificationEndPoint;
+    this.tokenStatus = tokenStatus;
+  }
+
+  public static NotificationToken create(UUID userId, NotificationEndPoint notificationEndPoint,
+      TokenStatus tokenStatus) {
+    return new NotificationToken(userId, notificationEndPoint, tokenStatus);
+  }
 
   public void updateTokenStatus(TokenStatus tokenStatus) {
     this.tokenStatus = tokenStatus;

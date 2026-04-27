@@ -3,5 +3,4 @@ eureka:
     service-url:
       defaultZone: ${EUREKA_SERVER_URL}
   instance:
-    instance-id:
-      ${spring.cloud.client.hostname}:${spring.application.instance_id:${random.value}
+    instance-id: "${spring.cloud.client.hostname}:${spring.application.instance_id:${random.value}}"

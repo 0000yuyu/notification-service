@@ -22,7 +22,7 @@ public class NotificationMessage {
     this.redirectUrl = redirectUrl;
   }
 
-  public static NotificationMessageBuilder create(String title, String body, String redirectUrl) {
+  public static NotificationMessageBuilder create() {
     return NotificationMessage.builder();
   }
 }

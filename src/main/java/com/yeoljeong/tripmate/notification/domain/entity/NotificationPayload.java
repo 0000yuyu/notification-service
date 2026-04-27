@@ -22,6 +22,7 @@ public class NotificationPayload {
 
   public NotificationPayload(String payload) {
     validate(payload);
+    this.payload = payload;
   }
 
   private void validate(String payload) {

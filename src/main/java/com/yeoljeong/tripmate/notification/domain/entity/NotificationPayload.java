@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NotificationPayload {
 
-  private final ObjectMapper objectMapper = new ObjectMapper();
+  private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
   @Column(nullable = false)
   private String payload;
@@ -26,7 +26,7 @@ public class NotificationPayload {
 
   private void validate(String payload) {
     try {
-      objectMapper.readTree(payload);
+      OBJECT_MAPPER.readTree(payload);
     } catch (JacksonException e) {
       throw new BusinessException(NotificationHistoryErrorCode.INVALID_JSON_FORMAT);
     }

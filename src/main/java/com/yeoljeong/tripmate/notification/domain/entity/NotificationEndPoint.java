@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Embeddable
 @Getter
 @NoArgsConstructor
-class NotificationEndPoint {
+public class NotificationEndPoint {
 
   private static final String EMAIL_PATTERN =
       "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@" +

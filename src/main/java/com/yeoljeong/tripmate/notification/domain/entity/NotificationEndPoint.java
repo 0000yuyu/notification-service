@@ -6,6 +6,7 @@ import com.yeoljeong.tripmate.notification.domain.constants.DeviceType;
 import com.yeoljeong.tripmate.notification.domain.exception.NotificationTokenErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import java.util.regex.Pattern;
 import lombok.Builder;
@@ -23,11 +24,11 @@ class NotificationEndPoint {
   private static final Pattern pattern = Pattern.compile(EMAIL_PATTERN);
 
   @Column(nullable = false)
-  @Enumerated
+  @Enumerated(EnumType.STRING)
   private ChannelType channelType;
 
   @Column()
-  @Enumerated
+  @Enumerated(EnumType.STRING)
   private DeviceType deviceType;
 
   @Column(nullable = false)

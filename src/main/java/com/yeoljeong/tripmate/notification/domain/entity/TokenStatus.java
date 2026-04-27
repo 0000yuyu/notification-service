@@ -3,12 +3,15 @@ package com.yeoljeong.tripmate.notification.domain.entity;
 import com.yeoljeong.tripmate.notification.domain.constants.TokenActiveStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.RequiredArgsConstructor;
 
 @Embeddable
 @RequiredArgsConstructor
 public class TokenStatus {
 
+  @Enumerated(EnumType.STRING)
   @Column(name = "token_status", nullable = false)
   TokenActiveStatus activeStatus;
 

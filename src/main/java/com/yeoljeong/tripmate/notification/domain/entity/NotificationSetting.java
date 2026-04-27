@@ -5,11 +5,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.UUID;
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "p_notification_setting")
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NotificationSetting {
 
   @Id
@@ -28,7 +29,7 @@ public class NotificationSetting {
     return new NotificationSetting(user_id, true);
   }
 
-  public void updatePushEnabled() {
-    this.pushEnabled = !pushEnabled;
+  public void updatePushEnabled(boolean pushEnabled) {
+    this.pushEnabled = pushEnabled;
   }
 }

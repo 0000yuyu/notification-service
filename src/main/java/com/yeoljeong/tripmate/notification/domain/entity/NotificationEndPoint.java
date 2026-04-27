@@ -31,7 +31,7 @@ class NotificationEndPoint {
   @Enumerated(EnumType.STRING)
   private DeviceType deviceType;
 
-  @Column(nullable = false)
+  @Column()
   private String deviceId;
 
   @Column(nullable = false)

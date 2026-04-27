@@ -39,6 +39,20 @@ public class NotificationHistory extends BaseAuditEntity {
   @Embedded
   private NotificationResult notificationResult;
 
+  private NotificationHistory(NotificationEndPoint endPoint, NotificationSource source,
+      NotificationMessage message, NotificationPayload payload, NotificationResult result) {
+    this.notificationEndPointSnapShot = endPoint;
+    this.notificationSource = source;
+    this.notificationMessage = message;
+    this.notificationPayload = payload;
+    this.notificationResult = result;
+  }
+
+  public static NotificationHistory create(NotificationEndPoint endPoint, NotificationSource source,
+      NotificationMessage message, NotificationPayload payload, NotificationResult result) {
+    return new NotificationHistory(endPoint, source, message, payload, result);
+  }
+
   public void updateResult(NotificationResult notificationResult) {
     this.notificationResult = notificationResult;
   }

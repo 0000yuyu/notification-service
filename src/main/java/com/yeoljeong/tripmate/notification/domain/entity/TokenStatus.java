@@ -1,6 +1,8 @@
 package com.yeoljeong.tripmate.notification.domain.entity;
 
+import com.yeoljeong.tripmate.exception.BusinessException;
 import com.yeoljeong.tripmate.notification.domain.constants.TokenActiveStatus;
+import com.yeoljeong.tripmate.notification.domain.exception.NotificationTokenErrorCode;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
@@ -32,7 +34,12 @@ public class TokenStatus {
   }
 
   public TokenStatus markFailure(int MAX_FAIL_COUNT) {
+    if (MAX_FAIL_COUNT < 1) {
+      throw new BusinessException(NotificationTokenErrorCode.INVALID_MAX_COUNT);
+    }
+
     int next = this.failCount + 1;
+
     if (next >= MAX_FAIL_COUNT) {
       return new TokenStatus(TokenActiveStatus.EXPIRED, next);
     }

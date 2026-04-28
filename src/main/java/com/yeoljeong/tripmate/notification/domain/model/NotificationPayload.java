@@ -1,4 +1,4 @@
-package com.yeoljeong.tripmate.notification.domain.entity;
+package com.yeoljeong.tripmate.notification.domain.model;
 
 import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.databind.ObjectMapper;

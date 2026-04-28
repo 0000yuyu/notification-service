@@ -1,4 +1,4 @@
-package com.yeoljeong.tripmate.notification.domain.entity;
+package com.yeoljeong.tripmate.notification.domain.model;
 
 import com.yeoljeong.tripmate.exception.BusinessException;
 import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;

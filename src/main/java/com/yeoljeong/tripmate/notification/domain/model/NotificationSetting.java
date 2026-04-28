@@ -1,4 +1,4 @@
-package com.yeoljeong.tripmate.notification.domain.entity;
+package com.yeoljeong.tripmate.notification.domain.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

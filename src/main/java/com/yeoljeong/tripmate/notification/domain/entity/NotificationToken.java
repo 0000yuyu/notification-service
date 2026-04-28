@@ -11,7 +11,6 @@ import jakarta.persistence.Table;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.UuidGenerator;
 
 @Entity
 @Table(name = "p_notification_token")
@@ -20,7 +19,6 @@ public class NotificationToken extends BaseAuditEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
-  @UuidGenerator
   private UUID id;
 
   @Column(name = "user_id")

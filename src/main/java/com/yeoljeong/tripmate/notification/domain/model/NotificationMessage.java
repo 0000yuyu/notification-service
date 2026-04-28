@@ -1,4 +1,4 @@
-package com.yeoljeong.tripmate.notification.domain.entity;
+package com.yeoljeong.tripmate.notification.domain.model;
 
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;

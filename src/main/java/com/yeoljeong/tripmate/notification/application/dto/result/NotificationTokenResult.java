@@ -19,7 +19,9 @@ public record NotificationTokenResult(
         .builder()
         .channelType(token.getNotificationEndPoint().getChannelType().name())
         .deviceType(
-            Optional.of(token.getNotificationEndPoint().getDeviceType().name()).orElse(null)
+            Optional.ofNullable(token.getNotificationEndPoint().getDeviceType())
+                .map(Enum::name)
+                .orElse(null)
         )
         .deviceId(token.getNotificationEndPoint().getDeviceId())
         .tokenValue(token.getNotificationEndPoint().getTokenValue())

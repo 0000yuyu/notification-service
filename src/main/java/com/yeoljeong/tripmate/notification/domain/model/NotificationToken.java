@@ -8,12 +8,26 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.util.UUID;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "p_notification_token")
+@Table(
+    name = "p_notification_token",
+    uniqueConstraints = {
+        @UniqueConstraint(
+            name = "uk_notification_endpoint",
+            columnNames = {"user_id", "channel_type", "device_type", "device_id"}
+        ),
+        @UniqueConstraint(
+            name = "uk_token_value",
+            columnNames = {"token_value"}
+        )
+    })
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NotificationToken extends BaseAuditEntity {
 
@@ -48,5 +62,9 @@ public class NotificationToken extends BaseAuditEntity {
 
   public boolean isTokenUsable() {
     return tokenStatus.isUsable();
+  }
+
+  public void updateTokenEndpoint(NotificationEndPoint endPoint) {
+    this.notificationEndPoint = endPoint;
   }
 }

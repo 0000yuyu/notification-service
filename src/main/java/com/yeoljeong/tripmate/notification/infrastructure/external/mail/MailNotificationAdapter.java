@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class MailNotificationAdapter implements NotificationSender {
       throws MessagingException {
     MimeMessage mimeMessage = javaMailSender.createMimeMessage();
     MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
-    mimeMessageHelper.setSubject(command.body());
+    mimeMessageHelper.setSubject(command.title());
     mimeMessageHelper.setTo(mail);
     mimeMessageHelper.setText(command.body());
     return mimeMessage;
@@ -39,11 +40,11 @@ public class MailNotificationAdapter implements NotificationSender {
       try {
         javaMailSender.send(createMessage(command, command.tokens().get(i)));
         results.add(NotificationIndividualResult.success());
-      } catch (MessagingException e) {
+      } catch (MailException | MessagingException e) {
         results.add(NotificationIndividualResult.fail(e.getMessage()));
       }
     }
-    return null;
+    return NotificationSendResult.from(results);
   }
 
   @Override

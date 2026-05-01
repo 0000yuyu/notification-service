@@ -1,0 +1,2 @@
+firebase:
+  service-key: ${FIREBASE_SERVICE_KEY}

@@ -8,3 +8,5 @@ spring:
     include:
       - db
       - eureka
+      - firebase
+      - mail

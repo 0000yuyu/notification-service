@@ -41,21 +41,23 @@ public class FcmNotificationAdapter implements NotificationSender {
   @Override
   public NotificationSendResult send(NotificationSendCommand command) {
     MulticastMessage message = createMessage(command);
-    try {
-      BatchResponse response = sendPushMessageForMulticast(message);
-      List<NotificationIndividualResult> details =
-          response.getResponses().stream()
-              .map(res ->
-                  res.isSuccessful()
-                      ? NotificationIndividualResult.success()
-                      : NotificationIndividualResult.fail(res.getException().getMessage())
-              )
-              .toList();
-      return NotificationSendResult.from(details);
-    } catch (FirebaseMessagingException e) {
-      handleFcmException(e);
-      return null;
+    if (command.tokens() != null) {
+      try {
+        BatchResponse response = sendPushMessageForMulticast(message);
+        List<NotificationIndividualResult> details =
+            response.getResponses().stream()
+                .map(res ->
+                    res.isSuccessful()
+                        ? NotificationIndividualResult.success()
+                        : NotificationIndividualResult.fail(res.getException().getMessage())
+                )
+                .toList();
+        return NotificationSendResult.from(details);
+      } catch (FirebaseMessagingException e) {
+        handleFcmException(e);
+      }
     }
+    return null;
   }
 
   @Override

@@ -26,7 +26,7 @@ public class FirebaseConfig {
         FirebaseApp.initializeApp(options);
       }
     } catch (IOException e) {
-      throw new IllegalStateException();
+      throw new IllegalStateException("firebase sdk가 초기화되지 않았습니다.", e);
     }
   }
 }

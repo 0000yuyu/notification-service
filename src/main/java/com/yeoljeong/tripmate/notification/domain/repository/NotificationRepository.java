@@ -9,13 +9,15 @@ import java.util.UUID;
 
 public interface NotificationRepository {
 
-  Optional<NotificationToken> findByTokenValue(String notificationEndPoint_tokenValue);
+  Optional<NotificationToken> findTokenDataByTokenValue(String notificationEndPoint_tokenValue);
 
-  Optional<NotificationToken> findByUserIdAndChannelTypeAndDeviceIdAndDeviceType(
+  Optional<NotificationToken> findTokenDataByUserIdAndChannelTypeAndDeviceIdAndDeviceType(
       UUID userId, ChannelType notificationEndPoint_channelType,
       String notificationEndPoint_deviceId, DeviceType notificationEndPoint_deviceType);
 
-  NotificationToken save(NotificationToken myTokenData);
+  NotificationToken saveForTokenData(NotificationToken myTokenData);
 
   Optional<NotificationSetting> findSettingDataById(UUID userId);
+
+  NotificationSetting saveForSettingData(NotificationSetting setting);
 }

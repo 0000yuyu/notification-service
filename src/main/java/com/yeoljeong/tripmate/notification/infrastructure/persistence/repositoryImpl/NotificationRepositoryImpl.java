@@ -16,29 +16,34 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class NotificationRepositoryImpl implements NotificationRepository {
 
-  private final NotificationTokenJpaRepository tokenJpaRepository;
+  private final NotificationTokenJpaRepository notificationTokenJpaRepository;
   private final NotificationSettingJpaRepository notificationSettingJpaRepository;
 
   @Override
-  public Optional<NotificationToken> findByTokenValue(String tokenValue) {
-    return tokenJpaRepository.findByNotificationEndPoint_TokenValue(tokenValue);
+  public Optional<NotificationToken> findTokenDataByTokenValue(String tokenValue) {
+    return notificationTokenJpaRepository.findByNotificationEndPoint_TokenValue(tokenValue);
   }
 
   @Override
-  public Optional<NotificationToken> findByUserIdAndChannelTypeAndDeviceIdAndDeviceType
+  public Optional<NotificationToken> findTokenDataByUserIdAndChannelTypeAndDeviceIdAndDeviceType
       (UUID userId, ChannelType channelType, String deviceId, DeviceType deviceType) {
-    return tokenJpaRepository
+    return notificationTokenJpaRepository
         .findByUserIdAndNotificationEndPoint_ChannelTypeAndNotificationEndPoint_DeviceIdAndNotificationEndPoint_DeviceType(
             userId, channelType, deviceId, deviceType);
   }
 
   @Override
-  public NotificationToken save(NotificationToken tokenData) {
-    return tokenJpaRepository.save(tokenData);
+  public NotificationToken saveForTokenData(NotificationToken tokenData) {
+    return notificationTokenJpaRepository.save(tokenData);
   }
 
   @Override
   public Optional<NotificationSetting> findSettingDataById(UUID userId) {
     return notificationSettingJpaRepository.findById(userId);
+  }
+
+  @Override
+  public NotificationSetting saveForSettingData(NotificationSetting settingData) {
+    return notificationSettingJpaRepository.save(settingData);
   }
 }

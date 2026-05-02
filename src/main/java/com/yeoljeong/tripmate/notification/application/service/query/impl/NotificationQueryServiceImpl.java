@@ -2,10 +2,10 @@ package com.yeoljeong.tripmate.notification.application.service.query.impl;
 
 import com.yeoljeong.tripmate.exception.BusinessException;
 import com.yeoljeong.tripmate.notification.application.dto.condition.NotificationHistorySearchCondition;
+import com.yeoljeong.tripmate.notification.application.dto.result.NotificationHistoryIndividualResult;
 import com.yeoljeong.tripmate.notification.application.dto.result.NotificationSettingResult;
 import com.yeoljeong.tripmate.notification.application.service.query.NotificationQueryService;
 import com.yeoljeong.tripmate.notification.domain.exception.NotificationSettingErrorCode;
-import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationSetting;
 import com.yeoljeong.tripmate.notification.domain.repository.NotificationRepository;
 import java.util.UUID;
@@ -27,7 +27,7 @@ public class NotificationQueryServiceImpl implements NotificationQueryService {
   }
 
   @Override
-  public Page<NotificationHistory> getNotificationsByCondition(
+  public Page<NotificationHistoryIndividualResult> getNotificationsByCondition(
       NotificationHistorySearchCondition searchCondition) {
     return notificationRepository.getNotificationsByCondition
         (
@@ -37,6 +37,6 @@ public class NotificationQueryServiceImpl implements NotificationQueryService {
             searchCondition.notificationType(),
             searchCondition.isRead(),
             searchCondition.pageable()
-        );
+        ).map(NotificationHistoryIndividualResult::from);
   }
 }

@@ -4,17 +4,16 @@ import com.yeoljeong.tripmate.auth.LoginUser;
 import com.yeoljeong.tripmate.auth.UserContext;
 import com.yeoljeong.tripmate.notification.application.service.command.NotificationCommandService;
 import com.yeoljeong.tripmate.notification.application.service.query.NotificationQueryService;
-import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
 import com.yeoljeong.tripmate.notification.presentation.dto.request.NotificationHistorySearchByUserRequest;
 import com.yeoljeong.tripmate.notification.presentation.dto.request.NotificationSettingRequest;
 import com.yeoljeong.tripmate.notification.presentation.dto.request.NotificationTokenRequest;
+import com.yeoljeong.tripmate.notification.presentation.dto.response.NotificationHistoryResponse;
 import com.yeoljeong.tripmate.notification.presentation.dto.response.NotificationSettingResponse;
 import com.yeoljeong.tripmate.notification.presentation.dto.response.NotificationTokenResponse;
 import com.yeoljeong.tripmate.response.ApiResponse;
 import com.yeoljeong.tripmate.response.constants.CommonSuccessCode;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.annotation.Validated;
@@ -72,16 +71,17 @@ public class NotificationController {
   }
 
   @GetMapping("/me")
-  public ApiResponse<Page<NotificationHistory>> getHistoryData(
+  public ApiResponse<NotificationHistoryResponse> getHistoryData(
       @LoginUser UserContext userContext,
       @ModelAttribute NotificationHistorySearchByUserRequest request,
       @PageableDefault Pageable pageable
   ) {
     return ApiResponse.success(
         CommonSuccessCode.OK,
-        notificationQueryService.getNotificationsByCondition(
-            request.toCondition(UUID.fromString(userContext.userId()), pageable)
-        )
+        NotificationHistoryResponse.from(
+            notificationQueryService.getNotificationsByCondition(
+                request.toCondition(UUID.fromString(userContext.userId()), pageable)
+            ))
     );
   }
 }

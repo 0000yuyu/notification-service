@@ -1,8 +1,6 @@
 package com.yeoljeong.tripmate.notification.domain.model;
 
 import com.yeoljeong.tripmate.domain.BaseAuditEntity;
-import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
-import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -21,8 +19,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NotificationHistory extends BaseAuditEntity {
 
-  @Column(nullable = false)
-  private final boolean isRead = false;
+
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
@@ -38,6 +35,9 @@ public class NotificationHistory extends BaseAuditEntity {
   @Embedded
   private NotificationResult notificationResult;
 
+  @Column(nullable = false)
+  private boolean isRead;
+
   private NotificationHistory(UUID userId, NotificationEndPoint endPoint, NotificationSource source,
       NotificationMessage message, NotificationPayload payload, NotificationResult result) {
     this.userId = userId;
@@ -46,6 +46,7 @@ public class NotificationHistory extends BaseAuditEntity {
     this.notificationMessage = message;
     this.notificationPayload = payload;
     this.notificationResult = result;
+    this.isRead = false;
   }
 
   public static NotificationHistory create(UUID userId, NotificationEndPoint endPoint,
@@ -58,15 +59,11 @@ public class NotificationHistory extends BaseAuditEntity {
     this.notificationResult = notificationResult;
   }
 
-  protected boolean isFailed() {
+  public void markRead() {
+    this.isRead = true;
+  }
+
+  public boolean isFailed() {
     return notificationResult.isFailed();
-  }
-
-  protected NotificationType getNotificationType() {
-    return this.notificationSource.getType();
-  }
-
-  protected ChannelType getNotificationChannelType() {
-    return this.notificationEndPointSnapShot.getChannelType();
   }
 }

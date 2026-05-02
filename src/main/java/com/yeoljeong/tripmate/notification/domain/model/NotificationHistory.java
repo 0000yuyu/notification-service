@@ -35,7 +35,7 @@ public class NotificationHistory extends BaseAuditEntity {
   @Embedded
   private NotificationResult notificationResult;
 
-  @Column(nullable = false)
+  @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false NOT NULL")
   private boolean isRead;
 
   private NotificationHistory(UUID userId, NotificationEndPoint endPoint, NotificationSource source,

@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface NotificationHistoryRepository extends JpaRepository<NotificationHistory, UUID>,
+public interface NotificationHistoryJpaRepository extends JpaRepository<NotificationHistory, UUID>,
     JpaSpecificationExecutor<NotificationHistory> {
 
 }

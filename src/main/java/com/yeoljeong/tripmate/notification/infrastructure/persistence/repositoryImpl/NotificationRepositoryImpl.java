@@ -8,7 +8,7 @@ import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationSetting;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
 import com.yeoljeong.tripmate.notification.domain.repository.NotificationRepository;
-import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationHistoryRepository;
+import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationHistoryJpaRepository;
 import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationSettingJpaRepository;
 import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationTokenJpaRepository;
 import jakarta.persistence.criteria.Predicate;
@@ -28,7 +28,7 @@ public class NotificationRepositoryImpl implements NotificationRepository {
 
   private final NotificationTokenJpaRepository notificationTokenJpaRepository;
   private final NotificationSettingJpaRepository notificationSettingJpaRepository;
-  private final NotificationHistoryRepository notificationHistoryRepository;
+  private final NotificationHistoryJpaRepository notificationHistoryJpaRepository;
 
   @Override
   public Optional<NotificationToken> findTokenDataByTokenValue(String tokenValue) {
@@ -88,6 +88,6 @@ public class NotificationRepositoryImpl implements NotificationRepository {
       }
       return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     });
-    return notificationHistoryRepository.findAll(specification, pageable);
+    return notificationHistoryJpaRepository.findAll(specification, pageable);
   }
 }

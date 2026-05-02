@@ -54,6 +54,7 @@ public class NotificationCommandServiceImpl implements NotificationCommandServic
     return NotificationTokenResult.from(notificationRepository.saveForTokenData(myTokenData));
   }
 
+  @Transactional
   @Override
   public NotificationSettingResult updateSettingData(NotificationSettingCommand command) {
     NotificationSetting settingData = notificationRepository.findSettingDataById(command.userId())

@@ -9,5 +9,5 @@ public interface NotificationCommandService {
 
   NotificationTokenResult registerTokenData(NotificationTokenCommand command);
 
-  NotificationSettingResult updateSettingDataWithErrorHandling(NotificationSettingCommand command);
+  NotificationSettingResult updateSettingData(NotificationSettingCommand command);
 }

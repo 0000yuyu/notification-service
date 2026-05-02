@@ -1,10 +1,12 @@
 package com.yeoljeong.tripmate.notification.application.service.command.impl;
 
+import com.yeoljeong.tripmate.exception.BusinessException;
 import com.yeoljeong.tripmate.notification.application.dto.command.NotificationSettingCommand;
 import com.yeoljeong.tripmate.notification.application.dto.command.NotificationTokenCommand;
 import com.yeoljeong.tripmate.notification.application.dto.result.NotificationSettingResult;
 import com.yeoljeong.tripmate.notification.application.dto.result.NotificationTokenResult;
 import com.yeoljeong.tripmate.notification.application.service.command.NotificationCommandService;
+import com.yeoljeong.tripmate.notification.domain.exception.NotificationSettingErrorCode;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationEndPoint;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationSetting;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
@@ -13,7 +15,6 @@ import com.yeoljeong.tripmate.notification.domain.repository.NotificationReposit
 import jakarta.transaction.Transactional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -53,22 +54,13 @@ public class NotificationCommandServiceImpl implements NotificationCommandServic
     return NotificationTokenResult.from(notificationRepository.saveForTokenData(myTokenData));
   }
 
-  private NotificationSetting updateSettingData(NotificationSettingCommand command) {
-    NotificationSetting settingData = notificationRepository.findSettingDataById(command.userId())
-        .orElse(NotificationSetting.createSetting(command.userId()));
-    settingData.updatePushEnabled(command.pushEnabled());
-    return settingData;
-  }
-
   @Override
-  @Transactional
-  public NotificationSettingResult updateSettingDataWithErrorHandling(
-      NotificationSettingCommand command) {
-    try {
-      return NotificationSettingResult.from(updateSettingData(command));
-    } catch (DataIntegrityViolationException e) {
-      return NotificationSettingResult.from(updateSettingData(command));
-    }
+  public NotificationSettingResult updateSettingData(NotificationSettingCommand command) {
+    NotificationSetting settingData = notificationRepository.findSettingDataById(command.userId())
+        .orElseThrow(
+            () -> new BusinessException(NotificationSettingErrorCode.USER_SETTING_NOT_FOUND));
+    settingData.updatePushEnabled(command.pushEnabled());
+    return NotificationSettingResult.from(notificationRepository.saveForSettingData(settingData));
   }
 
   private void processDuplicateToken(

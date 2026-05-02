@@ -11,5 +11,7 @@ public enum NotificationType {
   PAYMENT_SUCCEED,
   PAYMENT_FAILED,
 
-  COMPANY_APPROVED
+  COMPANY_APPROVED,
+
+  ADMIN_SEND
 }

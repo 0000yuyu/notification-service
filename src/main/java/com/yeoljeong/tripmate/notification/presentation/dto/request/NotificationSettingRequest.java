@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public record NotificationSettingRequest(
     @NotNull
-    boolean pushEnabled
+    Boolean pushEnabled
 ) {
 
   public NotificationSettingCommand toCommand(UUID userId) {

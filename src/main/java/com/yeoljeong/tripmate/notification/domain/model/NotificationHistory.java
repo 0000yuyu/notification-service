@@ -22,6 +22,8 @@ public class NotificationHistory extends BaseAuditEntity {
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
 
+  private UUID userId;
+
   @Embedded
   private NotificationEndPoint notificationEndPointSnapShot;
 
@@ -37,8 +39,9 @@ public class NotificationHistory extends BaseAuditEntity {
   @Embedded
   private NotificationResult notificationResult;
 
-  private NotificationHistory(NotificationEndPoint endPoint, NotificationSource source,
+  private NotificationHistory(UUID userId, NotificationEndPoint endPoint, NotificationSource source,
       NotificationMessage message, NotificationPayload payload, NotificationResult result) {
+    this.userId = userId;
     this.notificationEndPointSnapShot = endPoint;
     this.notificationSource = source;
     this.notificationMessage = message;
@@ -46,9 +49,10 @@ public class NotificationHistory extends BaseAuditEntity {
     this.notificationResult = result;
   }
 
-  public static NotificationHistory create(NotificationEndPoint endPoint, NotificationSource source,
+  public static NotificationHistory create(UUID userId, NotificationEndPoint endPoint,
+      NotificationSource source,
       NotificationMessage message, NotificationPayload payload, NotificationResult result) {
-    return new NotificationHistory(endPoint, source, message, payload, result);
+    return new NotificationHistory(userId, endPoint, source, message, payload, result);
   }
 
   public void updateResult(NotificationResult notificationResult) {

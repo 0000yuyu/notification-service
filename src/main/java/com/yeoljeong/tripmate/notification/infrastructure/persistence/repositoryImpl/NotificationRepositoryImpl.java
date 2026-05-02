@@ -2,8 +2,10 @@ package com.yeoljeong.tripmate.notification.infrastructure.persistence.repositor
 
 import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
 import com.yeoljeong.tripmate.notification.domain.constants.DeviceType;
+import com.yeoljeong.tripmate.notification.domain.model.NotificationSetting;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
 import com.yeoljeong.tripmate.notification.domain.repository.NotificationRepository;
+import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationSettingJpaRepository;
 import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationTokenJpaRepository;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Repository;
 public class NotificationRepositoryImpl implements NotificationRepository {
 
   private final NotificationTokenJpaRepository tokenJpaRepository;
+  private final NotificationSettingJpaRepository notificationSettingJpaRepository;
 
   @Override
   public Optional<NotificationToken> findByTokenValue(String tokenValue) {
@@ -32,5 +35,10 @@ public class NotificationRepositoryImpl implements NotificationRepository {
   @Override
   public NotificationToken save(NotificationToken tokenData) {
     return tokenJpaRepository.save(tokenData);
+  }
+
+  @Override
+  public Optional<NotificationSetting> findSettingDataById(UUID userId) {
+    return notificationSettingJpaRepository.findById(userId);
   }
 }

@@ -2,10 +2,15 @@ package com.yeoljeong.tripmate.notification.domain.repository;
 
 import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
 import com.yeoljeong.tripmate.notification.domain.constants.DeviceType;
+import com.yeoljeong.tripmate.notification.domain.constants.NotificationResultStatus;
+import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
+import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationSetting;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface NotificationRepository {
 
@@ -20,4 +25,9 @@ public interface NotificationRepository {
   Optional<NotificationSetting> findSettingDataById(UUID userId);
 
   NotificationSetting saveForSettingData(NotificationSetting setting);
+
+  Page<NotificationHistory> getNotificationsByCondition(UUID userId,
+      NotificationResultStatus status,
+      ChannelType channelType, NotificationType notificationType,
+      Boolean isRead, Pageable pageable);
 }

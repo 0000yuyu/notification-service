@@ -1,8 +1,7 @@
 package com.yeoljeong.tripmate.notification.domain.model;
 
 import com.yeoljeong.tripmate.domain.BaseAuditEntity;
-import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
-import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,33 +10,33 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.util.UUID;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "p_notification_history")
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NotificationHistory extends BaseAuditEntity {
+
 
   @Id
   @GeneratedValue(strategy = GenerationType.UUID)
   private UUID id;
-
   private UUID userId;
-
   @Embedded
   private NotificationEndPoint notificationEndPointSnapShot;
-
   @Embedded
   private NotificationSource notificationSource;
-
   @Embedded
   private NotificationMessage notificationMessage;
-
   @Embedded
   private NotificationPayload notificationPayload;
-
   @Embedded
   private NotificationResult notificationResult;
+
+  @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false NOT NULL")
+  private boolean isRead;
 
   private NotificationHistory(UUID userId, NotificationEndPoint endPoint, NotificationSource source,
       NotificationMessage message, NotificationPayload payload, NotificationResult result) {
@@ -47,6 +46,7 @@ public class NotificationHistory extends BaseAuditEntity {
     this.notificationMessage = message;
     this.notificationPayload = payload;
     this.notificationResult = result;
+    this.isRead = false;
   }
 
   public static NotificationHistory create(UUID userId, NotificationEndPoint endPoint,
@@ -59,15 +59,11 @@ public class NotificationHistory extends BaseAuditEntity {
     this.notificationResult = notificationResult;
   }
 
-  protected boolean isFailed() {
+  public void markAsRead() {
+    this.isRead = true;
+  }
+
+  public boolean isFailed() {
     return notificationResult.isFailed();
-  }
-
-  protected NotificationType getNotificationType() {
-    return this.notificationSource.getType();
-  }
-
-  protected ChannelType getNotificationChannelType() {
-    return this.notificationEndPointSnapShot.getChannelType();
   }
 }

@@ -7,10 +7,12 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @Embeddable
 @RequiredArgsConstructor
+@Getter
 public class TokenStatus {
 
   @Enumerated(EnumType.STRING)

@@ -32,7 +32,7 @@ ext {
 }
 
 dependencies {
-    implementation 'com.yeoljeong:common-module:0.0.5-SNAPSHOT'
+    implementation 'com.yeoljeong:common-module:0.0.8-SNAPSHOT'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'

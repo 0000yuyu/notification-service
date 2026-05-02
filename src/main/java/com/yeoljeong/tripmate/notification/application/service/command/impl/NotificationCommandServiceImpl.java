@@ -10,10 +10,10 @@ import com.yeoljeong.tripmate.notification.domain.model.NotificationSetting;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
 import com.yeoljeong.tripmate.notification.domain.model.TokenStatus;
 import com.yeoljeong.tripmate.notification.domain.repository.NotificationRepository;
-import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationSettingJpaRepository;
 import jakarta.transaction.Transactional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 public class NotificationCommandServiceImpl implements NotificationCommandService {
 
   private final NotificationRepository notificationRepository;
-  private final NotificationSettingJpaRepository notificationSettingJpaRepository;
 
   @Override
   @Transactional
@@ -54,13 +53,22 @@ public class NotificationCommandServiceImpl implements NotificationCommandServic
     return NotificationTokenResult.from(notificationRepository.saveForTokenData(myTokenData));
   }
 
-  @Override
-  public NotificationSettingResult updateSettingData(NotificationSettingCommand command) {
+  private NotificationSetting updateSettingData(NotificationSettingCommand command) {
     NotificationSetting settingData = notificationRepository.findSettingDataById(command.userId())
         .orElse(NotificationSetting.createSetting(command.userId()));
     settingData.updatePushEnabled(command.pushEnabled());
-    return NotificationSettingResult.from(notificationRepository.saveForSettingData(settingData));
+    return settingData;
+  }
 
+  @Override
+  @Transactional
+  public NotificationSettingResult updateSettingDataWithErrorHandling(
+      NotificationSettingCommand command) {
+    try {
+      return NotificationSettingResult.from(updateSettingData(command));
+    } catch (DataIntegrityViolationException e) {
+      return NotificationSettingResult.from(updateSettingData(command));
+    }
   }
 
   private void processDuplicateToken(

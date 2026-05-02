@@ -59,7 +59,7 @@ public class NotificationController {
   ) {
     return ApiResponse.success(CommonSuccessCode.OK,
         NotificationSettingResponse.from(
-            notificationCommandService.updateSettingData(
+            notificationCommandService.updateSettingDataWithErrorHandling(
                 request.toCommand(UUID.fromString(userContext.userId()))
             )
         ));

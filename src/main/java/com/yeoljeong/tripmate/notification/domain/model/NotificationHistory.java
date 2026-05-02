@@ -59,7 +59,7 @@ public class NotificationHistory extends BaseAuditEntity {
     this.notificationResult = notificationResult;
   }
 
-  public void markRead() {
+  public void markAsRead() {
     this.isRead = true;
   }
 

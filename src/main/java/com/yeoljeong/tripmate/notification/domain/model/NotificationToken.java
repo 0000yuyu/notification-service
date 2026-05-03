@@ -56,6 +56,10 @@ public class NotificationToken extends BaseAuditEntity {
     return new NotificationToken(userId, notificationEndPoint, tokenStatus);
   }
 
+  public String getTokenValue() {
+    return notificationEndPoint.getTokenValue();
+  }
+
   public void updateTokenStatus(TokenStatus tokenStatus) {
     this.tokenStatus = tokenStatus;
   }

@@ -14,7 +14,6 @@ import com.yeoljeong.tripmate.notification.presentation.dto.response.Notificatio
 import com.yeoljeong.tripmate.notification.presentation.dto.response.NotificationTokenResponse;
 import com.yeoljeong.tripmate.response.ApiResponse;
 import com.yeoljeong.tripmate.response.constants.CommonSuccessCode;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -43,10 +42,9 @@ public class NotificationController {
     return ApiResponse.success(
         CommonSuccessCode.OK,
         NotificationTokenResponse.from(
-            notificationCommandService.registerTokenData(request.toCommand(
-                UUID.fromString(userContext.userId())))
-        )
-    );
+            notificationCommandService.registerTokenData(request.toCommand(userContext.userId())
+            )
+        ));
   }
 
   @GetMapping("/settings/me")
@@ -55,7 +53,7 @@ public class NotificationController {
   ) {
     return ApiResponse.success(CommonSuccessCode.OK,
         NotificationSettingResponse.from(
-            notificationQueryService.getSettingData(UUID.fromString(userContext.userId()))
+            notificationQueryService.getSettingData(userContext.userId())
         ));
   }
 
@@ -67,7 +65,7 @@ public class NotificationController {
     return ApiResponse.success(CommonSuccessCode.OK,
         NotificationSettingResponse.from(
             notificationCommandService.updateSettingData(
-                request.toCommand(UUID.fromString(userContext.userId()))
+                request.toCommand(userContext.userId())
             )
         ));
   }
@@ -82,7 +80,7 @@ public class NotificationController {
         CommonSuccessCode.OK,
         NotificationHistoryResponse.from(
             notificationQueryService.getNotificationsByCondition(
-                request.toCondition(UUID.fromString(userContext.userId()), pageable)
+                request.toCondition(userContext.userId(), pageable)
             ))
     );
   }

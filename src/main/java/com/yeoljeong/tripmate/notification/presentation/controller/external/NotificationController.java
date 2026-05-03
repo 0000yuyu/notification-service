@@ -1,13 +1,15 @@
 package com.yeoljeong.tripmate.notification.presentation.controller.external;
 
-import com.yeoljeong.tripmate.auth.LoginUser;
-import com.yeoljeong.tripmate.auth.UserContext;
+import com.yeoljeong.tripmate.auth.annotation.LoginUser;
+import com.yeoljeong.tripmate.auth.context.UserContext;
 import com.yeoljeong.tripmate.notification.application.service.command.NotificationCommandService;
 import com.yeoljeong.tripmate.notification.application.service.query.NotificationQueryService;
+import com.yeoljeong.tripmate.notification.presentation.dto.request.NotificationAdminSendRequest;
 import com.yeoljeong.tripmate.notification.presentation.dto.request.NotificationHistorySearchByUserRequest;
 import com.yeoljeong.tripmate.notification.presentation.dto.request.NotificationSettingRequest;
 import com.yeoljeong.tripmate.notification.presentation.dto.request.NotificationTokenRequest;
 import com.yeoljeong.tripmate.notification.presentation.dto.response.NotificationHistoryResponse;
+import com.yeoljeong.tripmate.notification.presentation.dto.response.NotificationSendResponse;
 import com.yeoljeong.tripmate.notification.presentation.dto.response.NotificationSettingResponse;
 import com.yeoljeong.tripmate.notification.presentation.dto.response.NotificationTokenResponse;
 import com.yeoljeong.tripmate.response.ApiResponse;
@@ -82,6 +84,20 @@ public class NotificationController {
             notificationQueryService.getNotificationsByCondition(
                 request.toCondition(UUID.fromString(userContext.userId()), pageable)
             ))
+    );
+  }
+
+  @PostMapping("/admin/send")
+  public ApiResponse<NotificationSendResponse> adminSendNotification(
+      @RequestBody @Validated NotificationAdminSendRequest notificationSendRequest
+  ) {
+    return ApiResponse.success(
+        CommonSuccessCode.OK,
+        NotificationSendResponse.from(
+            notificationCommandService.sendNotificationByAdmin(
+                notificationSendRequest.toCommand()
+            )
+        )
     );
   }
 }

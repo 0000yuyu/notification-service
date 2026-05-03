@@ -10,3 +10,6 @@ spring:
       - eureka
       - firebase
       - mail
+logging:
+  level:
+    org.hibernate.orm.jdbc.bind: TRACE

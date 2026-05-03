@@ -9,13 +9,15 @@ public record NotificationIndividualResult(
     String errorMessage
 ) {
 
-  public static NotificationIndividualResult success() {
+  public static NotificationIndividualResult success(int index) {
     return NotificationIndividualResult.builder()
+        .index(index)
         .isSuccess(true).build();
   }
 
-  public static NotificationIndividualResult fail(String errorMessage) {
+  public static NotificationIndividualResult fail(int index, String errorMessage) {
     return NotificationIndividualResult.builder()
+        .index(index)
         .isSuccess(false)
         .errorMessage(errorMessage)
         .build();

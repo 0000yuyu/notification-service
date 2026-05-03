@@ -39,9 +39,9 @@ public class MailNotificationAdapter implements NotificationSender {
     for (int i = 0; i < command.tokens().toArray().length; i++) {
       try {
         javaMailSender.send(createMessage(command, command.tokens().get(i)));
-        results.add(NotificationIndividualResult.success());
+        results.add(NotificationIndividualResult.success(i));
       } catch (MailException | MessagingException e) {
-        results.add(NotificationIndividualResult.fail(e.getMessage()));
+        results.add(NotificationIndividualResult.fail(i, e.getMessage()));
       }
     }
     return NotificationSendResult.from(results);

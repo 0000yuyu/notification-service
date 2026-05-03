@@ -4,6 +4,7 @@ import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
 import com.yeoljeong.tripmate.notification.domain.constants.DeviceType;
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationResultStatus;
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
+import com.yeoljeong.tripmate.notification.domain.constants.TokenActiveStatus;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationSetting;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
@@ -89,5 +90,11 @@ public class NotificationRepositoryImpl implements NotificationRepository {
       return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
     });
     return notificationHistoryJpaRepository.findAll(specification, pageable);
+  }
+
+  @Override
+  public List<NotificationToken> findSendableTokens(List<UUID> userIds, ChannelType channelType,
+      TokenActiveStatus activeStatus) {
+    return notificationTokenJpaRepository.findSendableTokens(userIds, channelType, activeStatus);
   }
 }

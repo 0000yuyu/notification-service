@@ -4,13 +4,16 @@ import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
 import com.yeoljeong.tripmate.notification.domain.constants.DeviceType;
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationResultStatus;
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
+import com.yeoljeong.tripmate.notification.domain.constants.TokenActiveStatus;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationSetting;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 
 public interface NotificationRepository {
 
@@ -30,4 +33,10 @@ public interface NotificationRepository {
       NotificationResultStatus status,
       ChannelType channelType, NotificationType notificationType,
       Boolean isRead, Pageable pageable);
+  
+  List<NotificationToken> findSendableTokens(
+      @Param("userIds") List<UUID> userIds,
+      @Param("channelType") ChannelType channelType,
+      @Param("activeStatus") TokenActiveStatus activeStatus
+  );
 }

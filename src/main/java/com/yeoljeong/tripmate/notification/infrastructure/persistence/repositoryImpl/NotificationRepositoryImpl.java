@@ -95,6 +95,9 @@ public class NotificationRepositoryImpl implements NotificationRepository {
   @Override
   public List<NotificationToken> findSendableTokens(List<UUID> userIds, ChannelType channelType,
       TokenActiveStatus activeStatus) {
+    if (userIds == null || userIds.isEmpty()) {
+      return List.of();
+    }
     return notificationTokenJpaRepository.findSendableTokens(userIds, channelType, activeStatus);
   }
 }

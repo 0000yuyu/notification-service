@@ -1,5 +1,6 @@
 package com.yeoljeong.tripmate.notification.domain.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class NotificationMessage {
 
   private String title;
+  @Column(columnDefinition = "TEXT", length = 2000)
   private String body;
   private String redirectUrl;
 

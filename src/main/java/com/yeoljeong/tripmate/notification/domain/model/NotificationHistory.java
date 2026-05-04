@@ -25,8 +25,6 @@ public class NotificationHistory extends BaseAuditEntity {
   private UUID id;
   private UUID userId;
   @Embedded
-  private NotificationEndPoint notificationEndPointSnapShot;
-  @Embedded
   private NotificationSource notificationSource;
   @Embedded
   private NotificationMessage notificationMessage;
@@ -38,10 +36,9 @@ public class NotificationHistory extends BaseAuditEntity {
   @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false NOT NULL")
   private boolean isRead;
 
-  private NotificationHistory(UUID userId, NotificationEndPoint endPoint, NotificationSource source,
+  private NotificationHistory(UUID userId, NotificationSource source,
       NotificationMessage message, NotificationPayload payload, NotificationResult result) {
     this.userId = userId;
-    this.notificationEndPointSnapShot = endPoint;
     this.notificationSource = source;
     this.notificationMessage = message;
     this.notificationPayload = payload;
@@ -49,10 +46,10 @@ public class NotificationHistory extends BaseAuditEntity {
     this.isRead = false;
   }
 
-  public static NotificationHistory create(UUID userId, NotificationEndPoint endPoint,
+  public static NotificationHistory create(UUID userId,
       NotificationSource source,
       NotificationMessage message, NotificationPayload payload, NotificationResult result) {
-    return new NotificationHistory(userId, endPoint, source, message, payload, result);
+    return new NotificationHistory(userId, source, message, payload, result);
   }
 
   public void updateResult(NotificationResult notificationResult) {

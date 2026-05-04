@@ -1,5 +1,6 @@
 package com.yeoljeong.tripmate.notification.domain.model;
 
+import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -16,6 +17,10 @@ import lombok.NoArgsConstructor;
 public class NotificationSource {
 
   @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private ChannelType channelType;
+
+  @Enumerated(EnumType.STRING)
   @Column(name = "notification_type", nullable = false)
   private NotificationType type;
 
@@ -25,13 +30,16 @@ public class NotificationSource {
   @Column(nullable = false)
   private String eventHash;
 
-  private NotificationSource(NotificationType type, UUID refId, String eventHash) {
+  private NotificationSource(NotificationType type, ChannelType channelType, UUID refId,
+      String eventHash) {
     this.type = type;
+    this.channelType = channelType;
     this.refId = refId;
     this.eventHash = eventHash;
   }
 
-  public static NotificationSource create(NotificationType type, UUID refId, String eventHash) {
-    return new NotificationSource(type, refId, eventHash);
+  public static NotificationSource create(NotificationType type, ChannelType channelType,
+      UUID refId, String eventHash) {
+    return new NotificationSource(type, channelType, refId, eventHash);
   }
 }

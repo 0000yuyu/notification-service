@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+</head>
+<body
+    style="margin: 0; padding: 0; background-color: #f4f6f8; font-family: 'Pretendard', -apple-system, sans-serif;">
+<div
+    style="max-width: 480px; margin: 40px auto; background-color: #ffffff; border-radius: 24px; padding: 40px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);">
+
+  <!-- 로고 및 제목 -->
+  <div style="text-align: left; margin-bottom: 32px;">
+    <div style="color: #3182f6; font-size: 24px; font-weight: bold; margin-bottom: 8px;">TripMate
+    </div>
+    <div style="font-size: 20px; font-weight: 700; color: #191f28;">결제가 실패하였습니다.</div>
+  </div>
+
+  <!-- 메인 금액 섹션 -->
+  <div
+      style="background-color: #f9fafb; border-radius: 16px; padding: 24px; text-align: center; margin-bottom: 32px;">
+    <div style="font-size: 14px; color: #4e5968; margin-bottom: 8px;">결제 금액</div>
+    <div style="font-size: 32px; font-weight: 700; color: #191f28;">${paymentPrice}원</div>
+    <div style="font-size: 14px; color: #4e5968; margin-bottom: 8px;">결제 실패 사유 :
+      ${paymentErrorMessage}
+    </div>
+
+
+  </div>
+
+  <!-- 결제 상세 정보 -->
+  <div style="margin-bottom: 32px;">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+      <span style="color: #8b95a1; font-size: 15px;">상품명</span>
+      <span style="color: #333d4b; font-size: 15px; font-weight: 500; text-align: right;">${productName}</span>
+    </div>
+    <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+      <span style="color: #8b95a1; font-size: 15px;">주문번호</span>
+      <span style="color: #333d4b; font-size: 15px; font-weight: 500;">${orderId}</span>
+    </div>
+  </div>
+
+  <!-- 버튼 -->
+  <div style="text-align: center;">
+    <a href="https://tripmate.com/mypage"
+       style="display: block; background-color: #3182f6; color: #ffffff; text-decoration: none; padding: 16px; border-radius: 12px; font-weight: 600; font-size: 16px;">결제
+      내역 확인하기</a>
+  </div>
+
+  <!-- 푸터 -->
+  <div
+      style="margin-top: 32px; text-align: center; color: #b0b8c1; font-size: 13px; line-height: 1.5;">
+    본 메일은 발신 전용입니다.<br/>
+    궁금하신 점은 고객센터(1588-0000)로 문의해주세요.
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,4 @@
+{
+  "title": "[TripMate] 결제 완료 안내",
+  "templatePath": "EMAIL.payment.completed.html"
+}

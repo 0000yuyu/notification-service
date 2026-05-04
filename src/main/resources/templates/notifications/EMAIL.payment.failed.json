@@ -1,0 +1,4 @@
+{
+  "title": "[TripMate] 결제 실패 안내",
+  "templatePath": "EMAIL.payment.failed.html"
+}

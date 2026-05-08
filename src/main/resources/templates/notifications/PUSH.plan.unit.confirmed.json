@@ -1,0 +1,4 @@
+{
+  "title": "일정 확정 알림",
+  "content": "${planUnitTitle}의 일정이 확정되었습니다."
+}

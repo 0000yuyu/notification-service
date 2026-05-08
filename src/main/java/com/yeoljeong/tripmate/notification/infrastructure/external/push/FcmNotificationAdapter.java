@@ -8,12 +8,12 @@ import com.google.firebase.messaging.MulticastMessage;
 import com.google.firebase.messaging.Notification;
 import com.google.firebase.messaging.SendResponse;
 import com.yeoljeong.tripmate.exception.BusinessException;
-import com.yeoljeong.tripmate.notification.application.dto.command.NotificationSendCommand;
 import com.yeoljeong.tripmate.notification.application.dto.result.NotificationIndividualResult;
 import com.yeoljeong.tripmate.notification.application.dto.result.NotificationSendResult;
 import com.yeoljeong.tripmate.notification.application.provider.NotificationSender;
 import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
-import com.yeoljeong.tripmate.notification.domain.exception.FirebaseErrorCode;
+import com.yeoljeong.tripmate.notification.domain.exception.NotificationSendErrorCode;
+import com.yeoljeong.tripmate.notification.infrastructure.dto.NotificationSendMessage;
 import java.util.List;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
@@ -23,14 +23,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class FcmNotificationAdapter implements NotificationSender {
 
-  private MulticastMessage createMessage(NotificationSendCommand command) {
+  private MulticastMessage createMessage(NotificationSendMessage message) {
     return MulticastMessage.builder()
-        .addAllTokens(command.tokens())
+        .addAllTokens(message.targetTokens())
         .setNotification(
             Notification
                 .builder()
-                .setTitle(command.title())
-                .setBody(command.body())
+                .setTitle(message.title())
+                .setBody(message.body())
                 .build()
         ).build();
   }
@@ -41,9 +41,9 @@ public class FcmNotificationAdapter implements NotificationSender {
   }
 
   @Override
-  public NotificationSendResult send(NotificationSendCommand command) {
-    MulticastMessage message = createMessage(command);
-    if (command.tokens() != null) {
+  public NotificationSendResult send(NotificationSendMessage sendMessage) {
+    MulticastMessage message = createMessage(sendMessage);
+    if (sendMessage.targetTokens() != null) {
       try {
         BatchResponse response = sendPushMessageForMulticast(message);
         List<SendResponse> responses = response.getResponses();
@@ -56,7 +56,7 @@ public class FcmNotificationAdapter implements NotificationSender {
                   : NotificationIndividualResult.fail(index, res.getException().getMessage());
             })
             .toList();
-        
+
         return NotificationSendResult.from(details);
       } catch (FirebaseMessagingException e) {
         handleFcmException(e);
@@ -72,12 +72,12 @@ public class FcmNotificationAdapter implements NotificationSender {
 
   private void handleFcmException(FirebaseMessagingException e) {
     MessagingErrorCode fcmCode = e.getMessagingErrorCode();
-    FirebaseErrorCode targetError = switch (fcmCode) {
-      case UNREGISTERED -> FirebaseErrorCode.EXPIRED_TOKEN;
-      case QUOTA_EXCEEDED -> FirebaseErrorCode.RATE_LIMIT_EXCEEDED;
-      case INTERNAL, UNAVAILABLE -> FirebaseErrorCode.FCM_SERVER_ERROR;
-      case INVALID_ARGUMENT -> FirebaseErrorCode.INVALID_NOTIFICATION_FORMAT;
-      default -> FirebaseErrorCode.INTERNAL_NOTIFICATION_ERROR;
+    NotificationSendErrorCode targetError = switch (fcmCode) {
+      case UNREGISTERED -> NotificationSendErrorCode.EXPIRED_TOKEN;
+      case QUOTA_EXCEEDED -> NotificationSendErrorCode.RATE_LIMIT_EXCEEDED;
+      case INTERNAL, UNAVAILABLE -> NotificationSendErrorCode.FCM_SERVER_ERROR;
+      case INVALID_ARGUMENT -> NotificationSendErrorCode.INVALID_NOTIFICATION_FORMAT;
+      default -> NotificationSendErrorCode.INTERNAL_NOTIFICATION_ERROR;
     };
     throw new BusinessException(targetError);
   }

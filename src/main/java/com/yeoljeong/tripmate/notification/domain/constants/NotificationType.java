@@ -3,7 +3,7 @@ package com.yeoljeong.tripmate.notification.domain.constants;
 public enum NotificationType {
   PLAN_CONFIRMED,
 
-  MATCHING_REQUIRED,
+  MATCHING_CREATED,
   MATCHING_MATCHED,
   MATCHING_SUCCEED,
   MATCHING_FAILED,

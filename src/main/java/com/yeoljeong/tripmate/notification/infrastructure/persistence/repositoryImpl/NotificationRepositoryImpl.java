@@ -74,7 +74,7 @@ public class NotificationRepositoryImpl implements NotificationRepository {
       predicates.add(criteriaBuilder.equal(root.get("userId"), userId));
       if (channelType != null) {
         predicates.add(
-            criteriaBuilder.equal(root.get("notificationEndPointSnapShot").get("channelType"),
+            criteriaBuilder.equal(root.get("notificationSource").get("channelType"),
                 channelType));
       }
       if (status != null) {
@@ -99,5 +99,10 @@ public class NotificationRepositoryImpl implements NotificationRepository {
       return List.of();
     }
     return notificationTokenJpaRepository.findSendableTokens(userIds, channelType, activeStatus);
+  }
+
+  @Override
+  public List<NotificationHistory> saveAllForHistoryData(List<NotificationHistory> histories) {
+    return notificationHistoryJpaRepository.saveAll(histories);
   }
 }

@@ -33,10 +33,12 @@ public interface NotificationRepository {
       NotificationResultStatus status,
       ChannelType channelType, NotificationType notificationType,
       Boolean isRead, Pageable pageable);
-  
+
   List<NotificationToken> findSendableTokens(
       @Param("userIds") List<UUID> userIds,
       @Param("channelType") ChannelType channelType,
       @Param("activeStatus") TokenActiveStatus activeStatus
   );
+
+  List<NotificationHistory> saveAllForHistoryData(List<NotificationHistory> histories);
 }

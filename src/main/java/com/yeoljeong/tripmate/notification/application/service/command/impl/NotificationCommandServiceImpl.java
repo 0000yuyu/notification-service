@@ -2,7 +2,7 @@ package com.yeoljeong.tripmate.notification.application.service.command.impl;
 
 import com.yeoljeong.tripmate.exception.BusinessException;
 import com.yeoljeong.tripmate.notification.application.dto.command.NotificationAdminSendRequestCommand;
-import com.yeoljeong.tripmate.notification.application.dto.command.NotificationSendCommand;
+import com.yeoljeong.tripmate.notification.application.dto.command.NotificationHistoryCreateCommand;
 import com.yeoljeong.tripmate.notification.application.dto.command.NotificationSettingCommand;
 import com.yeoljeong.tripmate.notification.application.dto.command.NotificationTokenCommand;
 import com.yeoljeong.tripmate.notification.application.dto.result.NotificationSendResult;
@@ -13,10 +13,17 @@ import com.yeoljeong.tripmate.notification.application.service.command.Notificat
 import com.yeoljeong.tripmate.notification.domain.constants.TokenActiveStatus;
 import com.yeoljeong.tripmate.notification.domain.exception.NotificationSettingErrorCode;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationEndPoint;
+import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
+import com.yeoljeong.tripmate.notification.domain.model.NotificationMessage;
+import com.yeoljeong.tripmate.notification.domain.model.NotificationPayload;
+import com.yeoljeong.tripmate.notification.domain.model.NotificationResult;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationSetting;
+import com.yeoljeong.tripmate.notification.domain.model.NotificationSource;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
 import com.yeoljeong.tripmate.notification.domain.model.TokenStatus;
 import com.yeoljeong.tripmate.notification.domain.repository.NotificationRepository;
+import com.yeoljeong.tripmate.notification.infrastructure.dto.NotificationSendMessage;
+import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationHistoryJpaRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +37,7 @@ public class NotificationCommandServiceImpl implements NotificationCommandServic
 
   private final NotificationRepository notificationRepository;
   private final NotificationSendService notificationSendService;
+  private final NotificationHistoryJpaRepository notificationHistoryJpaRepository;
 
   @Override
   @Transactional
@@ -50,7 +58,7 @@ public class NotificationCommandServiceImpl implements NotificationCommandServic
             command.userId(), command.channelType(), deviceId, command.deviceType())
         .map(tokenData -> {
           tokenData.updateTokenEndpoint(newEndPoint);
-          tokenData.updateTokenStatus(TokenStatus.inactiveInitial());
+          tokenData.updateTokenStatus(TokenStatus.activeInitial());
           return tokenData;
         })
         .orElseGet(() -> NotificationToken.create(
@@ -102,12 +110,34 @@ public class NotificationCommandServiceImpl implements NotificationCommandServic
         .toList();
 
     return notificationSendService.send(
-        NotificationSendCommand.builder()
-            .tokens(tokens)
+        NotificationSendMessage.builder()
+            .targetTokens(tokens)
             .title(requestCommand.title())
             .body(requestCommand.body())
             .channelType(requestCommand.channelType())
             .build()
     );
+  }
+
+  @Override
+  public List<NotificationHistory> createHistories(
+      NotificationHistoryCreateCommand command) {
+    List<NotificationHistory> histories =
+        command.userList()
+            .stream().map(userId ->
+                NotificationHistory
+                    .create(
+                        userId,
+                        NotificationSource.create(
+                            command.notificationType(),
+                            command.channelType(),
+                            command.refId(),
+                            command.eventHash()),
+                        NotificationMessage.create().title(command.title()).body(command.body())
+                            .redirectUrl(command.redirectUrl()).build(),
+                        new NotificationPayload(command.payload()),
+                        NotificationResult.pending()
+                    )).toList();
+    return notificationRepository.saveAllForHistoryData(histories);
   }
 }

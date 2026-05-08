@@ -11,7 +11,6 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +18,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FileCopyUtils;
+
 
 @Component
 @RequiredArgsConstructor
@@ -31,37 +31,46 @@ public class NotificationContentProvider implements NotificationContentBuilder {
   private final ObjectMapper objectMapper;
 
   @Override
-  public TemplateMessageResult build(String topicName, ChannelType channelType, JsonNode dataNode) {
+  public TemplateMessageResult build(String topicName, ChannelType channelType,
+      JsonNode dataNode) {
     try {
+      JsonNode config;
       Resource jsonRes = resourceLoader.getResource(
-          TEMPLATE_PREFIX + channelType.name() + "." + topicName + ".json");
+          TEMPLATE_PREFIX + channelType.name().toLowerCase() + "." + topicName + ".json");
 
-      JsonNode config = objectMapper.readTree(jsonRes.getInputStream());
-
-      String body;
-
-      if (channelType == ChannelType.EMAIL) {
-        String templatePath = config.get("templatePath").asText();
-        Resource htmlRes = resourceLoader.getResource(
-            TEMPLATE_PREFIX + templatePath);
-        body = FileCopyUtils.copyToString(
-            new InputStreamReader(htmlRes.getInputStream(), StandardCharsets.UTF_8));
-      } else {
-        body = config.get("content").asText();
+      try (var is = jsonRes.getInputStream()) {
+        config = objectMapper.readTree(is);
       }
 
-      Iterator<Entry<String, JsonNode>> fields = dataNode.fields();
-      while (fields.hasNext()) {
-        Map.Entry<String, JsonNode> entry = fields.next();
-        body = body.replace("${" + entry.getKey() + "}", entry.getValue().asText());
-      }
-      return TemplateMessageResult.of(
-          config.get("title").asText(),
-          body
-      );
+      String body = (channelType == ChannelType.EMAIL)
+          ? loadHtmlTemplate(config.get("templatePath").asText())
+          : config.get("content").asText();
+
+      body = replacePlaceholders(body, dataNode);
+
+      return TemplateMessageResult.of(config.get("title").asText(), body);
+
     } catch (IOException e) {
-      log.info(e);
+      log.error("Failed to load notification template: topic={}, channel={}", topicName,
+          channelType, e);
       throw new BusinessException(NotificationSendErrorCode.FAILED_LOAD_TEMPLATE);
     }
+  }
+
+  private String loadHtmlTemplate(String templatePath) throws IOException {
+    Resource htmlRes = resourceLoader.getResource(TEMPLATE_PREFIX + templatePath);
+    try (var isr = new InputStreamReader(htmlRes.getInputStream(), StandardCharsets.UTF_8)) {
+      return FileCopyUtils.copyToString(isr);
+    }
+  }
+
+  private String replacePlaceholders(String content, JsonNode dataNode) {
+    String result = content;
+    Iterator<Map.Entry<String, JsonNode>> fields = dataNode.fields();
+    while (fields.hasNext()) {
+      Map.Entry<String, JsonNode> entry = fields.next();
+      result = result.replace("${" + entry.getKey() + "}", entry.getValue().asText());
+    }
+    return result;
   }
 }

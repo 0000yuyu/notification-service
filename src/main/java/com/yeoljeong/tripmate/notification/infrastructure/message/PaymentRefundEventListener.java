@@ -1,13 +1,14 @@
 package com.yeoljeong.tripmate.notification.infrastructure.message;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yeoljeong.tripmate.event.PlanUnitConfirmedEvent;
-import com.yeoljeong.tripmate.event.enums.PlanTopic;
+import com.yeoljeong.tripmate.event.PaymentRefundedEvent;
+import com.yeoljeong.tripmate.event.enums.PaymentTopic;
 import com.yeoljeong.tripmate.notification.application.dto.command.EventProcessCommand;
 import com.yeoljeong.tripmate.notification.application.service.command.NotificationEventProcessService;
 import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
 import com.yeoljeong.tripmate.notification.infrastructure.config.kafka.KafkaPayloadDeserializer;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
@@ -16,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class PlanConfirmedEventListener {
+public class PaymentRefundEventListener {
 
   private final ObjectMapper objectMapper;
   private final NotificationEventProcessService notificationEventProcessService;
@@ -24,22 +25,33 @@ public class PlanConfirmedEventListener {
 
   @KafkaListener
       (
-          topics = PlanTopic.PLAN_UNIT_CONFIRMED_TOPIC,
+          topics = PaymentTopic.PAYMENT_REFUNDED_TOPIC,
           containerFactory = "kafkaListenerContainerFactory"
       )
-  public void listen(@Payload String payload, Acknowledgment ack) {
-    PlanUnitConfirmedEvent event = kafkaPayloadDeserializer.deserialize(payload,
-        PlanUnitConfirmedEvent.class);
+  public void create(@Payload String payload, Acknowledgment ack) {
+    PaymentRefundedEvent event = kafkaPayloadDeserializer.deserialize(payload,
+        PaymentRefundedEvent.class);
     try {
       notificationEventProcessService.process(
           EventProcessCommand.builder()
-              .userList(event.receivers())
+              .userList(List.of(event.userId()))
               .channelType(ChannelType.PUSH)
-              .topicName(PlanTopic.PLAN_UNIT_CONFIRMED_TOPIC)
-              .notificationType(NotificationType.PLAN_CONFIRMED)
-              .refId(event.planUnitId())
+              .topicName(PaymentTopic.PAYMENT_REFUNDED_TOPIC)
+              .notificationType(NotificationType.PAYMENT_SUCCEED)
+              .refId(event.productId())
               .eventHash(event.eventHash())
               .payload(objectMapper.valueToTree(event)).build());
+
+      notificationEventProcessService.process(
+          EventProcessCommand.builder()
+              .userList(List.of(event.userId()))
+              .channelType(ChannelType.EMAIL)
+              .refId(event.productId())
+              .topicName(PaymentTopic.PAYMENT_REFUNDED_TOPIC)
+              .notificationType(NotificationType.PAYMENT_SUCCEED)
+              .eventHash(event.eventHash())
+              .payload(objectMapper.valueToTree(event)).build());
+
       ack.acknowledge();
     } catch (Exception ignored) {
     }

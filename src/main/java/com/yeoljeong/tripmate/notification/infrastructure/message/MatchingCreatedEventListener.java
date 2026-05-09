@@ -4,18 +4,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yeoljeong.tripmate.event.MatchingCreateEvent;
 import com.yeoljeong.tripmate.event.enums.MatchingTopic;
 import com.yeoljeong.tripmate.notification.application.dto.command.EventProcessCommand;
-import com.yeoljeong.tripmate.notification.application.service.command.NotificationCommandService;
 import com.yeoljeong.tripmate.notification.application.service.command.NotificationEventProcessService;
-import com.yeoljeong.tripmate.notification.application.service.command.NotificationSendService;
 import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
-import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationTokenJpaRepository;
+import com.yeoljeong.tripmate.notification.infrastructure.config.kafka.KafkaPayloadDeserializer;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -23,19 +22,18 @@ import org.springframework.stereotype.Component;
 public class MatchingCreatedEventListener {
 
   private static final Logger log = LogManager.getLogger(MatchingCreatedEventListener.class);
-  private final NotificationTokenJpaRepository notificationTokenJpaRepository;
-  private final NotificationSendService notificationSendService;
-  private final NotificationCommandService notificationCommandService;
   private final ObjectMapper objectMapper;
   private final NotificationEventProcessService notificationEventProcessService;
+  private final KafkaPayloadDeserializer kafkaPayloadDeserializer;
 
   @KafkaListener
       (
           topics = MatchingTopic.MATCHING_CREATED_TOPIC,
-          groupId = "notification-group",
           containerFactory = "kafkaListenerContainerFactory"
       )
-  public void listen(MatchingCreateEvent event, Acknowledgment ack) {
+  public void listen(@Payload String payload, Acknowledgment ack) {
+    MatchingCreateEvent event = kafkaPayloadDeserializer.deserialize(payload,
+        MatchingCreateEvent.class);
     try {
       notificationEventProcessService.process(
           EventProcessCommand.builder()

@@ -7,10 +7,12 @@ import com.yeoljeong.tripmate.notification.application.dto.command.EventProcessC
 import com.yeoljeong.tripmate.notification.application.service.command.NotificationEventProcessService;
 import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
+import com.yeoljeong.tripmate.notification.infrastructure.config.kafka.KafkaPayloadDeserializer;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -19,14 +21,16 @@ public class PaymentSucceedEventListener {
 
   private final ObjectMapper objectMapper;
   private final NotificationEventProcessService notificationEventProcessService;
+  private final KafkaPayloadDeserializer kafkaPayloadDeserializer;
 
   @KafkaListener
       (
           topics = PaymentTopic.PAYMENT_COMPLETED_TOPIC,
-          groupId = "notification-group",
           containerFactory = "kafkaListenerContainerFactory"
       )
-  public void create(PaymentCompletedEvent event, Acknowledgment ack) {
+  public void create(@Payload String payload, Acknowledgment ack) {
+    PaymentCompletedEvent event = kafkaPayloadDeserializer.deserialize(payload,
+        PaymentCompletedEvent.class);
     try {
       notificationEventProcessService.process(
           EventProcessCommand.builder()

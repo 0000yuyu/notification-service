@@ -16,7 +16,6 @@ import com.yeoljeong.tripmate.notification.domain.model.NotificationEndPoint;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationMessage;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationPayload;
-import com.yeoljeong.tripmate.notification.domain.model.NotificationResult;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationSetting;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationSource;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
@@ -135,8 +134,7 @@ public class NotificationCommandServiceImpl implements NotificationCommandServic
                             command.eventHash()),
                         NotificationMessage.create().title(command.title()).body(command.body())
                             .redirectUrl(command.redirectUrl()).build(),
-                        new NotificationPayload(command.payload()),
-                        NotificationResult.pending()
+                        new NotificationPayload(command.payload())
                     )).toList();
     return notificationRepository.saveAllForHistoryData(histories);
   }

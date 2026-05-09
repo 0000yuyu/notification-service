@@ -30,37 +30,26 @@ public class NotificationHistory extends BaseAuditEntity {
   private NotificationMessage notificationMessage;
   @Embedded
   private NotificationPayload notificationPayload;
-  @Embedded
-  private NotificationResult notificationResult;
 
-  @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT false NOT NULL")
+  @Column(nullable = false)
   private boolean isRead;
 
   private NotificationHistory(UUID userId, NotificationSource source,
-      NotificationMessage message, NotificationPayload payload, NotificationResult result) {
+      NotificationMessage message, NotificationPayload payload) {
     this.userId = userId;
     this.notificationSource = source;
     this.notificationMessage = message;
     this.notificationPayload = payload;
-    this.notificationResult = result;
     this.isRead = false;
   }
 
   public static NotificationHistory create(UUID userId,
       NotificationSource source,
-      NotificationMessage message, NotificationPayload payload, NotificationResult result) {
-    return new NotificationHistory(userId, source, message, payload, result);
-  }
-
-  public void updateResult(NotificationResult notificationResult) {
-    this.notificationResult = notificationResult;
+      NotificationMessage message, NotificationPayload payload) {
+    return new NotificationHistory(userId, source, message, payload);
   }
 
   public void markAsRead() {
     this.isRead = true;
-  }
-
-  public boolean isFailed() {
-    return notificationResult.isFailed();
   }
 }

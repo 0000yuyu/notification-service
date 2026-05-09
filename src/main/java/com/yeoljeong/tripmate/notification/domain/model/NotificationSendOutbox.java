@@ -1,4 +1,4 @@
-package com.yeoljeong.tripmate.notification.infrastructure.persistence;
+package com.yeoljeong.tripmate.notification.domain.model;
 
 import com.yeoljeong.tripmate.domain.Outbox;
 import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;

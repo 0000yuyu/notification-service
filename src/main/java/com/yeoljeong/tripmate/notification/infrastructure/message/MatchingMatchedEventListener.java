@@ -29,7 +29,6 @@ public class MatchingMatchedEventListener {
   @KafkaListener
       (
           topics = MatchingTopic.MATCHING_MATCHED_TOPIC,
-          groupId = "notification-group",
           containerFactory = "kafkaListenerContainerFactory"
       )
   public void create(@Payload String payload, Acknowledgment ack) {

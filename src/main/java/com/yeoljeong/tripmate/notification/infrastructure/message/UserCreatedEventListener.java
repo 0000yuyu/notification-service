@@ -4,11 +4,13 @@ import com.yeoljeong.tripmate.event.UserCreatedEvent;
 import com.yeoljeong.tripmate.event.enums.UserTopic;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationSetting;
 import com.yeoljeong.tripmate.notification.domain.repository.NotificationRepository;
+import com.yeoljeong.tripmate.notification.infrastructure.config.kafka.KafkaPayloadDeserializer;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,14 +19,16 @@ public class UserCreatedEventListener {
 
   private static final Logger log = LogManager.getLogger(UserCreatedEventListener.class);
   private final NotificationRepository notificationRepository;
+  private final KafkaPayloadDeserializer kafkaPayloadDeserializer;
 
   @KafkaListener
       (
           topics = UserTopic.USER_CREATED_TOPIC,
-          groupId = "notification-group",
           containerFactory = "kafkaListenerContainerFactory"
       )
-  public void create(UserCreatedEvent event, Acknowledgment ack) {
+  public void create(@Payload String payload, Acknowledgment ack) {
+    UserCreatedEvent event = kafkaPayloadDeserializer.deserialize(payload,
+        UserCreatedEvent.class);
     try {
       notificationRepository.saveForSettingData(NotificationSetting.createSetting(event.userId()));
       ack.acknowledge();

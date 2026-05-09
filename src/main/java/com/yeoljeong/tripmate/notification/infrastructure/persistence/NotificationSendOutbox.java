@@ -32,6 +32,8 @@ public class NotificationSendOutbox extends Outbox {
   @Column(nullable = false)
   private UUID tokenId;
 
+  private String failReason;
+
   @Column(nullable = false)
   @Enumerated(EnumType.STRING)
   private NotificationType notificationType;
@@ -41,13 +43,20 @@ public class NotificationSendOutbox extends Outbox {
   private ChannelType channelType;
 
   public static NotificationSendOutbox create
-      (String topic, UUID historyId, NotificationType notificationType, UUID tokenId,
+      (String topic, UUID historyId, NotificationType notificationType, ChannelType channelType,
+          UUID tokenId,
           String payload) {
     NotificationSendOutbox outbox = new NotificationSendOutbox();
     init(outbox, topic, payload);
     outbox.historyId = historyId;
     outbox.tokenId = tokenId;
+    outbox.channelType = channelType;
     outbox.notificationType = notificationType;
     return outbox;
+  }
+
+  public void fail(String failReason) {
+    super.fail();
+    this.failReason = failReason;
   }
 }

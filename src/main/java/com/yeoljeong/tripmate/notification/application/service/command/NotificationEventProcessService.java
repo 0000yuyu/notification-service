@@ -7,12 +7,10 @@ import com.yeoljeong.tripmate.notification.application.dto.result.TemplateMessag
 import com.yeoljeong.tripmate.notification.application.provider.NotificationContentProvider;
 import com.yeoljeong.tripmate.notification.domain.constants.TokenActiveStatus;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
-import com.yeoljeong.tripmate.notification.domain.model.NotificationResult;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
 import com.yeoljeong.tripmate.notification.infrastructure.dto.NotificationSendMessage;
 import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationTokenJpaRepository;
 import java.util.List;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -66,15 +64,5 @@ public class NotificationEventProcessService {
             .channelType(processCommand.channelType())
             .build()
     );
-
-    IntStream.range(0, resultList.results().size())
-        .mapToObj(index -> {
-          if (resultList.results().get(index).isSuccess()) {
-            histories.get(index).updateResult(NotificationResult.sent());
-          } else {
-            histories.get(index).updateResult(NotificationResult.sent());
-          }
-          return null;
-        });
   }
 }

@@ -6,7 +6,6 @@ import com.yeoljeong.tripmate.notification.domain.constants.NotificationResultSt
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
 import com.yeoljeong.tripmate.notification.domain.constants.TokenActiveStatus;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
-import com.yeoljeong.tripmate.notification.domain.model.NotificationSendOutbox;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationSetting;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
 import java.util.List;
@@ -42,6 +41,4 @@ public interface NotificationRepository {
   );
 
   List<NotificationHistory> saveAllForHistoryData(List<NotificationHistory> histories);
-
-  List<NotificationSendOutbox> saveAllForOutboxData(List<NotificationSendOutbox> outboxes);
 }

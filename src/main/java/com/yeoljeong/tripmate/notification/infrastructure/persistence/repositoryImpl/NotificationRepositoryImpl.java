@@ -6,12 +6,10 @@ import com.yeoljeong.tripmate.notification.domain.constants.NotificationResultSt
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
 import com.yeoljeong.tripmate.notification.domain.constants.TokenActiveStatus;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
-import com.yeoljeong.tripmate.notification.domain.model.NotificationSendOutbox;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationSetting;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
 import com.yeoljeong.tripmate.notification.domain.repository.NotificationRepository;
 import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationHistoryJpaRepository;
-import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationSendOutboxJpaRepository;
 import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationSettingJpaRepository;
 import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationTokenJpaRepository;
 import jakarta.persistence.criteria.Predicate;
@@ -32,7 +30,6 @@ public class NotificationRepositoryImpl implements NotificationRepository {
   private final NotificationTokenJpaRepository notificationTokenJpaRepository;
   private final NotificationSettingJpaRepository notificationSettingJpaRepository;
   private final NotificationHistoryJpaRepository notificationHistoryJpaRepository;
-  private final NotificationSendOutboxJpaRepository notificationSendOutboxJpaRepository;
 
   @Override
   public Optional<NotificationToken> findTokenDataByTokenValue(String tokenValue) {
@@ -107,10 +104,5 @@ public class NotificationRepositoryImpl implements NotificationRepository {
   @Override
   public List<NotificationHistory> saveAllForHistoryData(List<NotificationHistory> histories) {
     return notificationHistoryJpaRepository.saveAll(histories);
-  }
-
-  @Override
-  public List<NotificationSendOutbox> saveAllForOutboxData(List<NotificationSendOutbox> outboxes) {
-    return notificationSendOutboxJpaRepository.saveAll(outboxes);
   }
 }

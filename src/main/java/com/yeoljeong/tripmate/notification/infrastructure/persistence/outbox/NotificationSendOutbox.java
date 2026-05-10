@@ -1,6 +1,7 @@
-package com.yeoljeong.tripmate.notification.domain.model;
+package com.yeoljeong.tripmate.notification.infrastructure.persistence.outbox;
 
 import com.yeoljeong.tripmate.domain.Outbox;
+import com.yeoljeong.tripmate.notification.application.dto.command.NotificationOutboxCommand;
 import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
 import jakarta.persistence.Column;
@@ -42,16 +43,14 @@ public class NotificationSendOutbox extends Outbox {
   @Enumerated(EnumType.STRING)
   private ChannelType channelType;
 
-  public static NotificationSendOutbox create
-      (String topic, UUID historyId, NotificationType notificationType, ChannelType channelType,
-          UUID tokenId,
-          String payload) {
+  public static NotificationSendOutbox from
+      (NotificationOutboxCommand command) {
     NotificationSendOutbox outbox = new NotificationSendOutbox();
-    init(outbox, topic, payload);
-    outbox.historyId = historyId;
-    outbox.tokenId = tokenId;
-    outbox.channelType = channelType;
-    outbox.notificationType = notificationType;
+    init(outbox, command.topic(), command.message());
+    outbox.historyId = command.historyId();
+    outbox.tokenId = command.tokenId();
+    outbox.channelType = command.channelType();
+    outbox.notificationType = command.notificationType();
     return outbox;
   }
 

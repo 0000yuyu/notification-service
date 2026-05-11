@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yeoljeong.tripmate.event.MatchingCandidatesFoundEvent;
 import com.yeoljeong.tripmate.event.enums.MatchingTopic;
 import com.yeoljeong.tripmate.notification.application.dto.command.EventProcessCommand;
+import com.yeoljeong.tripmate.notification.application.provider.PayloadConverter;
 import com.yeoljeong.tripmate.notification.application.service.command.NotificationEventProcessService;
 import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
-import com.yeoljeong.tripmate.notification.infrastructure.config.kafka.KafkaPayloadDeserializer;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,15 +23,16 @@ public class MatchingCandidatedEventListener {
   private static final Logger log = LogManager.getLogger(MatchingCandidatedEventListener.class);
   private final ObjectMapper objectMapper;
   private final NotificationEventProcessService notificationEventProcessService;
-  private final KafkaPayloadDeserializer kafkaPayloadDeserializer;
+  private final PayloadConverter payloadConverter;
 
   @KafkaListener
       (
           topics = MatchingTopic.MATCHING_CANDIDATES_FOUND_TOPIC,
+          groupId = "${spring.kafka.consumer.group-id}",
           containerFactory = "kafkaListenerContainerFactory"
       )
   public void create(@Payload String payload, Acknowledgment ack) {
-    MatchingCandidatesFoundEvent event = kafkaPayloadDeserializer.deserialize(payload,
+    MatchingCandidatesFoundEvent event = payloadConverter.deserialize(payload,
         MatchingCandidatesFoundEvent.class);
     try {
       notificationEventProcessService.process(
@@ -45,7 +46,7 @@ public class MatchingCandidatedEventListener {
               .payload(objectMapper.valueToTree(event)).build());
       ack.acknowledge();
     } catch (Exception e) {
-      log.info(e.getMessage());
+      log.error("이벤트 처리 실패 : {}", e.getMessage());
     }
   }
 }

@@ -2,11 +2,13 @@ package com.yeoljeong.tripmate.notification.application.service.command;
 
 import com.yeoljeong.tripmate.notification.application.dto.command.EventProcessCommand;
 import com.yeoljeong.tripmate.notification.application.dto.command.NotificationHistoryCreateCommand;
+import com.yeoljeong.tripmate.notification.application.dto.command.NotificationOutboxCommand;
 import com.yeoljeong.tripmate.notification.application.dto.result.TemplateMessageResult;
+import com.yeoljeong.tripmate.notification.application.port.NotificationOutboxPort;
 import com.yeoljeong.tripmate.notification.application.provider.NotificationContentProvider;
+import com.yeoljeong.tripmate.notification.application.provider.PayloadConverter;
 import com.yeoljeong.tripmate.notification.domain.constants.TokenActiveStatus;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
-import com.yeoljeong.tripmate.notification.domain.model.NotificationSendOutbox;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
 import com.yeoljeong.tripmate.notification.domain.repository.NotificationRepository;
 import java.util.List;
@@ -19,7 +21,9 @@ public class NotificationEventProcessService {
 
   private final NotificationContentProvider notificationContentProvider;
   private final NotificationCommandService notificationCommandService;
+  private final NotificationOutboxPort notificationOutboxPort;
   private final NotificationRepository notificationRepository;
+  private final PayloadConverter payloadConverter;
 
   public void process(EventProcessCommand processCommand) {
 
@@ -44,19 +48,18 @@ public class NotificationEventProcessService {
             TokenActiveStatus.ACTIVE
         );
 
-    List<NotificationSendOutbox> sendOutboxes = tokenEntities.stream()
+    List<NotificationOutboxCommand> sendOutboxes = tokenEntities.stream()
         .flatMap(token -> histories.stream()
             .filter(history -> history.getUserId().equals(token.getUserId()))
             .map(history ->
-                NotificationSendOutbox.create(
+                NotificationOutboxCommand.of(
                     processCommand.topicName(),
                     history.getId(),
                     processCommand.notificationType(),
                     processCommand.channelType(),
                     token.getId(),
-                    messageResult.toString())))
+                    payloadConverter.serialize(messageResult))))
         .toList();
-
-    notificationRepository.saveAllForOutboxData(sendOutboxes);
+    notificationOutboxPort.publish(sendOutboxes);
   }
 }

@@ -5,7 +5,7 @@ spring:
   application:
     name: notification-service
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/postgres
+    url: jdbc:postgresql://${POSTGRES_HOST}:${POSTGRES_PORT}/tripmate
     username: ${POSTGRES_USER}
     password: ${POSTGRES_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -48,8 +48,10 @@ eureka:
     service-url:
       defaultZone: ${EUREKA_SERVER_URL}
       fetch-registry: true
-      prefer-ip-address: true
   instance:
     hostname: ${EUREKA_INSTANCE_NAME}
     non-secure-port: 8080
+    non-secure-port-enabled: true
+    secure-port-enabled: false
+    prefer-ip-address: false
 

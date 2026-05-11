@@ -2,9 +2,9 @@ package com.yeoljeong.tripmate.notification.infrastructure.message;
 
 import com.yeoljeong.tripmate.event.UserCreatedEvent;
 import com.yeoljeong.tripmate.event.enums.UserTopic;
+import com.yeoljeong.tripmate.notification.application.provider.PayloadConverter;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationSetting;
 import com.yeoljeong.tripmate.notification.domain.repository.NotificationRepository;
-import com.yeoljeong.tripmate.notification.infrastructure.config.kafka.KafkaPayloadDeserializer;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,15 +19,16 @@ public class UserCreatedEventListener {
 
   private static final Logger log = LogManager.getLogger(UserCreatedEventListener.class);
   private final NotificationRepository notificationRepository;
-  private final KafkaPayloadDeserializer kafkaPayloadDeserializer;
+  private final PayloadConverter payloadConverter;
 
   @KafkaListener
       (
           topics = UserTopic.USER_CREATED_TOPIC,
+          groupId = "${spring.kafka.consumer.group-id}",
           containerFactory = "kafkaListenerContainerFactory"
       )
   public void create(@Payload String payload, Acknowledgment ack) {
-    UserCreatedEvent event = kafkaPayloadDeserializer.deserialize(payload,
+    UserCreatedEvent event = payloadConverter.deserialize(payload,
         UserCreatedEvent.class);
     try {
       notificationRepository.saveForSettingData(NotificationSetting.createSetting(event.userId()));

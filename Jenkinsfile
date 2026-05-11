@@ -8,6 +8,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'sunsik17/tripmate-notification'
         DOCKER_TAG = 'latest'
+        CONTAINER_NAME = 'notification-service'
         NOTIFICATION_EC2_IP = '172.31.35.239'
         PEM_PATH = '/var/lib/jenkins/tripmate.pem'
     }
@@ -51,12 +52,12 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh """
-                    ssh -i ${PEM_PATH} -o StrictHostKeyChecking=no ec2-user@${USER_EC2_IP} '
+                    ssh -i ${PEM_PATH} -o StrictHostKeyChecking=no ec2-user@${NOTIFICATION_EC2_IP} '
                         docker pull ${DOCKER_IMAGE}:${DOCKER_TAG}
-                        docker stop user-service || true
-                        docker rm user-service || true
+                        docker stop notification-service || true
+                        docker rm notification-service || true
                         docker run -d \\
-                            --name user-service \\
+                            --name notification-service \\
                             --env-file /home/ec2-user/.env \\
                             -p 8080:8080 \\
                             ${DOCKER_IMAGE}:${DOCKER_TAG}
@@ -67,11 +68,15 @@ pipeline {
     }
 
     post {
-        success {
-            echo 'Deploy succeeded'
-        }
-        failure {
-            echo 'Deploy failed'
-        }
+      always {
+          cleanWs()
+          sh 'docker system prune -f'
+      }
+      success {
+          echo 'Deploy succeeded'
+      }
+      failure {
+          echo 'Deploy failed'
+      }
     }
 }

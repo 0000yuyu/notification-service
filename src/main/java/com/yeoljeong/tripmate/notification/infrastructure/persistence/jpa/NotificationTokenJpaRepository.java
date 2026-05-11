@@ -27,9 +27,14 @@ public interface NotificationTokenJpaRepository extends JpaRepository<Notificati
   @Query("""
           select nt
           from NotificationToken nt
+          join NotificationSetting ns on nt.userId = ns.id
           where nt.userId in :userIds
-            and nt.notificationEndPoint.channelType = :channelType
             and nt.tokenStatus.activeStatus = :activeStatus
+            and nt.notificationEndPoint.channelType = :channelType
+            and (
+                :channelType <> 'PUSH'
+                or (:channelType = 'PUSH' and ns.pushEnabled = true)
+            )
       """)
   List<NotificationToken> findSendableTokens(
       @Param("userIds") List<UUID> userIds,

@@ -4,10 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yeoljeong.tripmate.event.MatchingCreateEvent;
 import com.yeoljeong.tripmate.event.enums.MatchingTopic;
 import com.yeoljeong.tripmate.notification.application.dto.command.EventProcessCommand;
+import com.yeoljeong.tripmate.notification.application.provider.PayloadConverter;
 import com.yeoljeong.tripmate.notification.application.service.command.NotificationEventProcessService;
 import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
-import com.yeoljeong.tripmate.notification.infrastructure.config.kafka.KafkaPayloadDeserializer;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
@@ -24,7 +24,7 @@ public class MatchingCreatedEventListener {
   private static final Logger log = LogManager.getLogger(MatchingCreatedEventListener.class);
   private final ObjectMapper objectMapper;
   private final NotificationEventProcessService notificationEventProcessService;
-  private final KafkaPayloadDeserializer kafkaPayloadDeserializer;
+  private final PayloadConverter payloadConverter;
 
   @KafkaListener
       (
@@ -32,7 +32,7 @@ public class MatchingCreatedEventListener {
           containerFactory = "kafkaListenerContainerFactory"
       )
   public void listen(@Payload String payload, Acknowledgment ack) {
-    MatchingCreateEvent event = kafkaPayloadDeserializer.deserialize(payload,
+    MatchingCreateEvent event = payloadConverter.deserialize(payload,
         MatchingCreateEvent.class);
     try {
       notificationEventProcessService.process(

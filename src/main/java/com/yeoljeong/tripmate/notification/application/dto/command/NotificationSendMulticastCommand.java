@@ -5,8 +5,8 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record NotificationSendCommand(
-    List<String> tokens,
+public record NotificationSendMulticastCommand(
+    List<String> targetTokens,
     ChannelType channelType,
     String title,
     String body

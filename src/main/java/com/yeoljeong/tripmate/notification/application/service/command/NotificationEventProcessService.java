@@ -6,6 +6,7 @@ import com.yeoljeong.tripmate.notification.application.dto.command.NotificationO
 import com.yeoljeong.tripmate.notification.application.dto.result.TemplateMessageResult;
 import com.yeoljeong.tripmate.notification.application.port.NotificationOutboxPort;
 import com.yeoljeong.tripmate.notification.application.provider.NotificationContentProvider;
+import com.yeoljeong.tripmate.notification.application.provider.PayloadConverter;
 import com.yeoljeong.tripmate.notification.domain.constants.TokenActiveStatus;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
@@ -22,6 +23,7 @@ public class NotificationEventProcessService {
   private final NotificationCommandService notificationCommandService;
   private final NotificationOutboxPort notificationOutboxPort;
   private final NotificationRepository notificationRepository;
+  private final PayloadConverter payloadConverter;
 
   public void process(EventProcessCommand processCommand) {
 
@@ -49,13 +51,14 @@ public class NotificationEventProcessService {
     List<NotificationOutboxCommand> sendOutboxes = tokenEntities.stream()
         .flatMap(token -> histories.stream()
             .filter(history -> history.getUserId().equals(token.getUserId()))
-            .map(history -> NotificationOutboxCommand.of(
-                processCommand.topicName(),
-                history.getId(),
-                processCommand.notificationType(),
-                processCommand.channelType(),
-                token.getId(),
-                messageResult.toString())))
+            .map(history ->
+                NotificationOutboxCommand.of(
+                    processCommand.topicName(),
+                    history.getId(),
+                    processCommand.notificationType(),
+                    processCommand.channelType(),
+                    token.getId(),
+                    payloadConverter.serialize(messageResult))))
         .toList();
     notificationOutboxPort.publish(sendOutboxes);
   }

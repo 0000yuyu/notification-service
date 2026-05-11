@@ -1,0 +1,4 @@
+{
+  "title": "매칭 실패 알림",
+  "content": "${matchingTitle}의 매칭이 실패하였습니다."
+}

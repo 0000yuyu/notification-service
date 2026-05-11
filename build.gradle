@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '4.0.5'
+    id 'org.springframework.boot' version '3.5.13'
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
@@ -16,19 +16,37 @@ java {
 
 repositories {
     mavenCentral()
+
+    maven {
+        name = "GithubPackages"
+        url = uri("https://maven.pkg.github.com/10jeong/common-module")
+        credentials {
+            username = System.getenv("GITHUB_USERNAME") ?: findProperty("githubUsername")
+            password = System.getenv("GITHUB_TOKEN") ?: findProperty("githubToken")
+        }
+    }
 }
 
 ext {
-    set('springCloudVersion', "2025.1.1")
+    set('springCloudVersion', "2025.0.2")
 }
 
 dependencies {
+    implementation 'com.yeoljeong:common-module:2.0.2-SNAPSHOT'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-    testImplementation 'org.springframework.boot:spring-boot-starter-data-jpa-test'
-    testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+    implementation 'com.google.firebase:firebase-admin:9.4.1'
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'org.projectlombok:lombok'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    runtimeOnly 'org.postgresql:postgresql'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    annotationProcessor 'org.projectlombok:lombok'
 }
 
 dependencyManagement {

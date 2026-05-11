@@ -77,9 +77,6 @@ public class NotificationRepositoryImpl implements NotificationRepository {
             criteriaBuilder.equal(root.get("notificationSource").get("channelType"),
                 channelType));
       }
-      if (status != null) {
-        predicates.add(criteriaBuilder.equal(root.get("notificationResult").get("status"), status));
-      }
       if (notificationType != null) {
         predicates.add(criteriaBuilder.equal(root.get("notificationSource").get("type"),
             notificationType));

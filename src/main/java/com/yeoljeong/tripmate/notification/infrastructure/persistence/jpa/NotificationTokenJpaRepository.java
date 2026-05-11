@@ -36,4 +36,6 @@ public interface NotificationTokenJpaRepository extends JpaRepository<Notificati
       @Param("channelType") ChannelType channelType,
       @Param("activeStatus") TokenActiveStatus activeStatus
   );
+
+  List<NotificationToken> findAllByIdIn(List<UUID> id);
 }

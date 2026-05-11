@@ -3,6 +3,7 @@ package com.yeoljeong.tripmate.notification.application.service.command.impl;
 import com.yeoljeong.tripmate.exception.BusinessException;
 import com.yeoljeong.tripmate.notification.application.dto.command.NotificationAdminSendRequestCommand;
 import com.yeoljeong.tripmate.notification.application.dto.command.NotificationHistoryCreateCommand;
+import com.yeoljeong.tripmate.notification.application.dto.command.NotificationSendMulticastCommand;
 import com.yeoljeong.tripmate.notification.application.dto.command.NotificationSettingCommand;
 import com.yeoljeong.tripmate.notification.application.dto.command.NotificationTokenCommand;
 import com.yeoljeong.tripmate.notification.application.dto.result.NotificationSendResult;
@@ -21,8 +22,6 @@ import com.yeoljeong.tripmate.notification.domain.model.NotificationSource;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
 import com.yeoljeong.tripmate.notification.domain.model.TokenStatus;
 import com.yeoljeong.tripmate.notification.domain.repository.NotificationRepository;
-import com.yeoljeong.tripmate.notification.infrastructure.dto.NotificationSendMessage;
-import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationHistoryJpaRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.Objects;
@@ -36,7 +35,6 @@ public class NotificationCommandServiceImpl implements NotificationCommandServic
 
   private final NotificationRepository notificationRepository;
   private final NotificationSendService notificationSendService;
-  private final NotificationHistoryJpaRepository notificationHistoryJpaRepository;
 
   @Override
   @Transactional
@@ -108,12 +106,12 @@ public class NotificationCommandServiceImpl implements NotificationCommandServic
         .filter(Objects::nonNull)
         .toList();
 
-    return notificationSendService.send(
-        NotificationSendMessage.builder()
+    return notificationSendService.sendMulticast(
+        NotificationSendMulticastCommand.builder()
+            .channelType(requestCommand.channelType())
             .targetTokens(tokens)
             .title(requestCommand.title())
             .body(requestCommand.body())
-            .channelType(requestCommand.channelType())
             .build()
     );
   }

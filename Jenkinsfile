@@ -51,7 +51,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh """
-                    ssh -i ${PEM_PATH} -o StrictHostKeyChecking=no ec2-user@${USER_EC2_IP} '
+                    ssh -i ${PEM_PATH} -o StrictHostKeyChecking=no ec2-user@${NOTIFICATION_EC2_IP} '
                         docker pull ${DOCKER_IMAGE}:${DOCKER_TAG}
                         docker stop user-service || true
                         docker rm user-service || true

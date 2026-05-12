@@ -7,8 +7,10 @@ import com.yeoljeong.tripmate.notification.application.dto.command.NotificationT
 import com.yeoljeong.tripmate.notification.application.dto.result.NotificationSendResult;
 import com.yeoljeong.tripmate.notification.application.dto.result.NotificationSettingResult;
 import com.yeoljeong.tripmate.notification.application.dto.result.NotificationTokenResult;
+import com.yeoljeong.tripmate.notification.application.dto.result.NotificationUpdateReadStatusResult;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
 import java.util.List;
+import java.util.UUID;
 
 public interface NotificationCommandService {
 
@@ -21,4 +23,6 @@ public interface NotificationCommandService {
   );
 
   List<NotificationHistory> createHistories(NotificationHistoryCreateCommand command);
+
+  NotificationUpdateReadStatusResult updateReadStatus(UUID uuid, UUID notificationHistoryId);
 }

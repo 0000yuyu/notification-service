@@ -32,7 +32,6 @@ public class NotificationQueryServiceImpl implements NotificationQueryService {
     return notificationRepository.getNotificationsByCondition
         (
             searchCondition.userId(),
-            searchCondition.status(),
             searchCondition.channelType(),
             searchCondition.notificationType(),
             searchCondition.isRead(),

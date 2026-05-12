@@ -139,6 +139,7 @@ public class NotificationCommandServiceImpl implements NotificationCommandServic
     return notificationRepository.saveAllForHistoryData(histories);
   }
 
+  @Transactional
   @Override
   public NotificationUpdateReadStatusResult updateReadStatus(UUID userId,
       UUID notificationHistoryId) {
@@ -148,7 +149,6 @@ public class NotificationCommandServiceImpl implements NotificationCommandServic
       throw new BusinessException(NotificationHistoryErrorCode.HISTORY_NOT_ACCESSIBLE);
     }
     history.markAsRead();
-    return NotificationUpdateReadStatusResult.from(
-        notificationRepository.saveForHistoryData(history));
+    return NotificationUpdateReadStatusResult.from(history);
   }
 }

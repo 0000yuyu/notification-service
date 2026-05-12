@@ -39,4 +39,8 @@ public interface NotificationRepository {
   );
 
   List<NotificationHistory> saveAllForHistoryData(List<NotificationHistory> histories);
+
+  Optional<NotificationHistory> findHistoryDataById(UUID notificationHistoryId);
+
+  NotificationHistory saveForHistoryData(NotificationHistory history);
 }

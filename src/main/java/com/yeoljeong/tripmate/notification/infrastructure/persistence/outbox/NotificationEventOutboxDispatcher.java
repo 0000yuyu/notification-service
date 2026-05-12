@@ -37,7 +37,6 @@ public class NotificationEventOutboxDispatcher {
   private final NotificationHistoryJpaRepository notificationHistoryJpaRepository;
 
   @Scheduled(fixedDelay = 1000)
-  @Async
   public void dispatch() {
     List<NotificationSendOutbox> targetOutboxes = getSendableOutboxes();
     log.info("알림 발송 할 항목 : {}", targetOutboxes.size());

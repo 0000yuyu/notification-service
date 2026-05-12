@@ -2,7 +2,6 @@ package com.yeoljeong.tripmate.notification.infrastructure.persistence.repositor
 
 import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
 import com.yeoljeong.tripmate.notification.domain.constants.DeviceType;
-import com.yeoljeong.tripmate.notification.domain.constants.NotificationResultStatus;
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
 import com.yeoljeong.tripmate.notification.domain.constants.TokenActiveStatus;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
@@ -62,7 +61,6 @@ public class NotificationRepositoryImpl implements NotificationRepository {
   @Override
   public Page<NotificationHistory> getNotificationsByCondition(
       UUID userId,
-      NotificationResultStatus status,
       ChannelType channelType,
       NotificationType notificationType,
       Boolean isRead,

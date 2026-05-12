@@ -7,6 +7,7 @@ import com.yeoljeong.tripmate.notification.application.dto.result.TemplateMessag
 import com.yeoljeong.tripmate.notification.application.port.NotificationOutboxPort;
 import com.yeoljeong.tripmate.notification.application.provider.NotificationContentProvider;
 import com.yeoljeong.tripmate.notification.application.provider.PayloadConverter;
+import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
 import com.yeoljeong.tripmate.notification.domain.constants.TokenActiveStatus;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
@@ -58,8 +59,17 @@ public class NotificationEventProcessService {
                     processCommand.notificationType(),
                     processCommand.channelType(),
                     token.getId(),
-                    payloadConverter.serialize(messageResult))))
+                    payloadConverter.serialize(messageResult),
+                    getRetryCount(processCommand.notificationType()))))
         .toList();
     notificationOutboxPort.publish(sendOutboxes);
+  }
+
+  private int getRetryCount(NotificationType notificationType) {
+    return switch (notificationType) {
+      case PAYMENT_SUCCEED, PAYMENT_FAILED -> 5;
+      case MATCHING_CREATED -> 1;
+      default -> 3;
+    };
   }
 }

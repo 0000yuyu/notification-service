@@ -11,19 +11,21 @@ public record NotificationOutboxCommand(
     UUID historyId,
     UUID tokenId,
     ChannelType channelType,
+    int maxRetryCount,
     NotificationType notificationType,
     String message
 ) {
 
   public static NotificationOutboxCommand of(String topic, UUID historyId,
       NotificationType notificationType,
-      ChannelType channelType, UUID tokenId, String message) {
+      ChannelType channelType, UUID tokenId, String message, int maxRetryCount) {
     return NotificationOutboxCommand.builder()
         .topic(topic)
         .channelType(channelType)
         .notificationType(notificationType)
         .tokenId(tokenId)
         .historyId(historyId)
+        .maxRetryCount(maxRetryCount)
         .message(message).build();
   }
 }

@@ -42,5 +42,18 @@ public interface NotificationTokenJpaRepository extends JpaRepository<Notificati
       @Param("activeStatus") TokenActiveStatus activeStatus
   );
 
-  List<NotificationToken> findAllByIdIn(List<UUID> id);
+  List<NotificationToken> findAllByIdIn(List<UUID> tokenIds);
+
+  @Query("""
+          select count(nt) > 0
+          from NotificationToken nt
+          join NotificationSetting ns on nt.userId = ns.id
+          where nt.id = :tokenId
+            and nt.tokenStatus.activeStatus = 'ACTIVE'
+            and (
+                nt.notificationEndPoint.channelType != 'PUSH'
+                or (nt.notificationEndPoint.channelType = 'PUSH' and ns.pushEnabled = true)
+            )
+      """)
+  boolean isSendableToken(UUID tokenId);
 }

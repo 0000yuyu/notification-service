@@ -100,4 +100,14 @@ public class NotificationRepositoryImpl implements NotificationRepository {
   public List<NotificationHistory> saveAllForHistoryData(List<NotificationHistory> histories) {
     return notificationHistoryJpaRepository.saveAll(histories);
   }
+
+  @Override
+  public Optional<NotificationHistory> findHistoryDataById(UUID notificationHistoryId) {
+    return notificationHistoryJpaRepository.findById(notificationHistoryId);
+  }
+
+  @Override
+  public NotificationHistory saveForHistoryData(NotificationHistory history) {
+    return notificationHistoryJpaRepository.save(history);
+  }
 }

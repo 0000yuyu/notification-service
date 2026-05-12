@@ -17,7 +17,7 @@ public interface NotificationSendOutboxJpaRepository extends
           select count(o) > 0
           from NotificationSendOutbox o
           where o.historyId = :historyId
-            and o.status = 'PUBLISHED'
+            and o.notificationResultStatus = 'PUBLISHED'
       """)
   boolean existsSuccessByHistoryId(UUID historyId);
 }

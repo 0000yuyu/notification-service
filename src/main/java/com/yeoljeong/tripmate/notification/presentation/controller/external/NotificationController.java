@@ -116,4 +116,14 @@ public class NotificationController {
         )
     );
   }
+
+  @PatchMapping("/read-all")
+  public ApiResponse<Void> updateAllReadStatus(
+      @LoginUser UserContext userContext
+  ) {
+    notificationCommandService.updateAllReadStatus(userContext.userId());
+    return ApiResponse.success(
+        CommonSuccessCode.OK, null
+    );
+  }
 }

@@ -25,6 +25,7 @@ import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
 import com.yeoljeong.tripmate.notification.domain.model.TokenStatus;
 import com.yeoljeong.tripmate.notification.domain.repository.NotificationRepository;
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -150,5 +151,11 @@ public class NotificationCommandServiceImpl implements NotificationCommandServic
     }
     history.markAsRead();
     return NotificationUpdateReadStatusResult.from(history);
+  }
+  
+  @Transactional
+  @Override
+  public void updateAllReadStatus(UUID userId) {
+    notificationRepository.updateReadAllHistoryData(userId, LocalDateTime.now());
   }
 }

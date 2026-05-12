@@ -23,9 +23,9 @@ pipeline {
         stage('Build') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'github-token',
-                    usernameVariable: 'GITHUB_USERNAME',
-                    passwordVariable: 'GITHUB_TOKEN'
+                        credentialsId: 'github-token',
+                        usernameVariable: 'GITHUB_USERNAME',
+                        passwordVariable: 'GITHUB_TOKEN'
                 )]) {
                     sh 'chmod +x gradlew'
                     sh './gradlew clean build -x test'
@@ -36,9 +36,9 @@ pipeline {
         stage('Docker Build & Push') {
             steps {
                 withCredentials([usernamePassword(
-                    credentialsId: 'docker-account',
-                    usernameVariable: 'DOCKER_USERNAME',
-                    passwordVariable: 'DOCKER_PASSWORD'
+                        credentialsId: 'docker-account',
+                        usernameVariable: 'DOCKER_USERNAME',
+                        passwordVariable: 'DOCKER_PASSWORD'
                 )]) {
                     sh """
                         docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}
@@ -59,6 +59,7 @@ pipeline {
                         docker run -d \\
                             --name notification-service \\
                             --env-file /home/ec2-user/.env \\
+                            -e SPRING_PROFILES_ACTIVE=prod \\
                             -p 8080:8080 \\
                             ${DOCKER_IMAGE}:${DOCKER_TAG}
                     '
@@ -68,15 +69,15 @@ pipeline {
     }
 
     post {
-      always {
-          cleanWs()
-          sh 'docker system prune -f'
-      }
-      success {
-          echo 'Deploy succeeded'
-      }
-      failure {
-          echo 'Deploy failed'
-      }
+        always {
+            cleanWs()
+            sh 'docker system prune -f'
+        }
+        success {
+            echo 'Deploy succeeded'
+        }
+        failure {
+            echo 'Deploy failed'
+        }
     }
 }

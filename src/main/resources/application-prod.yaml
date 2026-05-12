@@ -55,3 +55,14 @@ eureka:
     secure-port-enabled: false
     prefer-ip-address: false
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+  endpoint:
+    health:
+      show-details: always
+    prometheus:
+      access: unrestricted
+

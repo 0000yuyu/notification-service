@@ -61,6 +61,8 @@ public class NotificationSendOutbox extends Outbox {
     outbox.channelType = command.channelType();
     outbox.notificationType = command.notificationType();
     outbox.nextAttemptAt = LocalDateTime.now();
+    outbox.maxRetryCount = command.maxRetryCount();
+    outbox.notificationResultStatus = NotificationResultStatus.PENDING;
     return outbox;
   }
 

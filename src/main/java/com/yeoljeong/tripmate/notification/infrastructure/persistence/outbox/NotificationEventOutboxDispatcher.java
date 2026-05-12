@@ -1,6 +1,5 @@
 package com.yeoljeong.tripmate.notification.infrastructure.persistence.outbox;
 
-import com.yeoljeong.tripmate.domain.constants.OutboxStatus;
 import com.yeoljeong.tripmate.notification.application.dto.command.NotificationSendEachCommand;
 import com.yeoljeong.tripmate.notification.application.dto.command.NotificationSendTarget;
 import com.yeoljeong.tripmate.notification.application.dto.result.NotificationIndividualResult;
@@ -8,10 +7,12 @@ import com.yeoljeong.tripmate.notification.application.dto.result.NotificationSe
 import com.yeoljeong.tripmate.notification.application.provider.PayloadConverter;
 import com.yeoljeong.tripmate.notification.application.service.command.NotificationSendService;
 import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
+import com.yeoljeong.tripmate.notification.domain.constants.NotificationResultStatus;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
 import com.yeoljeong.tripmate.notification.infrastructure.dto.TemplateMessage;
+import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationHistoryJpaRepository;
 import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationTokenJpaRepository;
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -33,78 +34,94 @@ public class NotificationEventOutboxDispatcher {
   private final NotificationTokenJpaRepository notificationTokenJpaRepository;
   private final PayloadConverter payloadConverter;
   private final TransactionTemplate transactionTemplate;
+  private final NotificationHistoryJpaRepository notificationHistoryJpaRepository;
 
   @Scheduled(fixedDelay = 1000)
-  @Async
   public void dispatch() {
-
-    List<NotificationSendOutbox> pendingEvents = outboxRepository
-        .findTop100ByStatusOrderByCreatedAtAsc(
-            OutboxStatus.PENDING
-        );
+    List<NotificationSendOutbox> targetOutboxes = getSendableOutboxes();
+    log.info("알림 발송 할 항목 : {}", targetOutboxes.size());
     try {
-      processSendMessage(pendingEvents.stream()
-              .filter(event -> ChannelType.PUSH.equals(event.getChannelType())).toList(),
-          ChannelType.PUSH);
-      processSendMessage(pendingEvents.stream()
-              .filter(event -> ChannelType.EMAIL.equals(event.getChannelType())).toList(),
-          ChannelType.EMAIL);
-
+      targetOutboxes.stream()
+          .collect(Collectors.groupingBy(NotificationSendOutbox::getChannelType))
+          .forEach(this::processSendMessage);
     } catch (Exception e) {
       log.error("알림 발송 중에 오류가 생겼습니다.", e);
     }
   }
 
-  private void processSendMessage(List<NotificationSendOutbox> outboxes,
-      ChannelType channelType) {
-    if (outboxes.isEmpty()) {
+  private List<NotificationSendOutbox> getSendableOutboxes() {
+    List<NotificationSendOutbox> outboxes =
+        outboxRepository.findTop100ByNotificationResultStatusInAndNextAttemptAtLessThanEqual
+            (
+                List.of(NotificationResultStatus.PENDING, NotificationResultStatus.FAILED),
+                LocalDateTime.now()
+            );
+    log.info("outbox candidate : {}", outboxes.size());
+
+    transactionTemplate.executeWithoutResult(transactionStatus -> {
+      outboxes.forEach(outbox -> {
+        if (notificationHistoryJpaRepository.isRead(outbox.getHistoryId())) {
+          outbox.skip("이미 읽음");
+          log.info("Outbox ID: {} -> 이미 읽음 처리", outbox.getId());
+        } else if (!notificationTokenJpaRepository.isSendableToken(outbox.getTokenId())) {
+          outbox.skip("토큰이 없거나 비활성화됨");
+          log.info("Outbox ID: {} -> 토큰 비활성화", outbox.getId());
+        } else if (outbox.getNotificationResultStatus() == NotificationResultStatus.FAILED
+            && outboxRepository.existsSuccessByHistoryId(outbox.getHistoryId())) {
+          outbox.skip("재발송 중 타 기기 발송 성공으로 인한 스킵");
+          log.info("Outbox ID: {} -> 타 기기 성공 스킵", outbox.getId());
+        }
+      });
+      outboxRepository.saveAll(outboxes);
+    });
+
+    return outboxes.stream()
+        .filter(outbox -> outbox.getNotificationResultStatus() != NotificationResultStatus.SKIPPED)
+        .toList();
+  }
+
+  private void processSendMessage(ChannelType channelType,
+      List<NotificationSendOutbox> targetOutboxes) {
+    if (targetOutboxes.isEmpty()) {
       return;
     }
 
     Map<UUID, String> tokenMap = notificationTokenJpaRepository
-        .findAllByIdIn(outboxes.stream().map(NotificationSendOutbox::getTokenId).toList())
+        .findAllByIdIn(targetOutboxes.stream().map(NotificationSendOutbox::getTokenId).toList())
         .stream()
         .collect(Collectors.toMap(
             NotificationToken::getId,
             NotificationToken::getTokenValue
         ));
-    List<NotificationSendOutbox> attemptOutboxes = new ArrayList<>();
-    List<NotificationSendTarget> targets = new ArrayList<>();
+    List<NotificationSendTarget> targets = targetOutboxes.stream().map(
+        outbox -> {
+          TemplateMessage message = payloadConverter.deserialize(outbox.getPayload(),
+              TemplateMessage.class);
+          return NotificationSendTarget.builder().title(message.title())
+              .body(message.body())
+              .token(tokenMap.get(outbox.getTokenId()))
+              .build();
+        }
+    ).toList();
 
-    for (NotificationSendOutbox outbox : outboxes) {
-      String token = tokenMap.get(outbox.getTokenId());
-      TemplateMessage message = payloadConverter.deserialize(
-          outbox.getPayload(),
-          TemplateMessage.class
-      );
-
-      if (token == null) {
-        outbox.fail("토큰 없음");
-        continue;
-      }
-
-      attemptOutboxes.add(outbox);
-      targets.add(NotificationSendTarget.builder()
-          .token(token)
-          .title(message.title())
-          .body(message.body())
-          .build());
-    }
     NotificationSendResult result = notificationSendService.sendEach(
         NotificationSendEachCommand.builder().channelType(channelType).targets(targets).build());
 
-    transactionTemplate.executeWithoutResult(status -> {
-          for (int i = 0; i < attemptOutboxes.size(); i++) {
-            NotificationIndividualResult individualResult = result.results().get(i);
-            NotificationSendOutbox outbox = attemptOutboxes.get(i);
+    log.info("토큰 발송 결과 : 개수 : {}, {}", result.results().size(), result.results());
 
+    transactionTemplate.executeWithoutResult(status -> {
+          for (int i = 0; i < targetOutboxes.size(); i++) {
+            NotificationIndividualResult individualResult = result.results().get(i);
+            NotificationSendOutbox outbox = targetOutboxes.get(i);
             if (individualResult.isSuccess()) {
               outbox.published();
             } else {
               outbox.fail(individualResult.errorMessage());
             }
           }
+          outboxRepository.saveAll(targetOutboxes);
         }
     );
+
   }
 }

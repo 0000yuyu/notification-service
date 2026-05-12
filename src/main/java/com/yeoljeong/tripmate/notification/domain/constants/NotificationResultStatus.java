@@ -2,7 +2,8 @@ package com.yeoljeong.tripmate.notification.domain.constants;
 
 public enum NotificationResultStatus {
   PENDING,
-  SEND,
+  PUBLISHED,
+  SKIPPED,
   FAILED,
   GIVE_UP
 }

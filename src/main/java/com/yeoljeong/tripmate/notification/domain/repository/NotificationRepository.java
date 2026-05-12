@@ -2,12 +2,12 @@ package com.yeoljeong.tripmate.notification.domain.repository;
 
 import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
 import com.yeoljeong.tripmate.notification.domain.constants.DeviceType;
-import com.yeoljeong.tripmate.notification.domain.constants.NotificationResultStatus;
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
 import com.yeoljeong.tripmate.notification.domain.constants.TokenActiveStatus;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationSetting;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,7 +30,6 @@ public interface NotificationRepository {
   NotificationSetting saveForSettingData(NotificationSetting setting);
 
   Page<NotificationHistory> getNotificationsByCondition(UUID userId,
-      NotificationResultStatus status,
       ChannelType channelType, NotificationType notificationType,
       Boolean isRead, Pageable pageable);
 
@@ -41,4 +40,8 @@ public interface NotificationRepository {
   );
 
   List<NotificationHistory> saveAllForHistoryData(List<NotificationHistory> histories);
+
+  Optional<NotificationHistory> findHistoryDataById(UUID notificationHistoryId);
+
+  void updateReadAllHistoryData(UUID userId, LocalDateTime now);
 }

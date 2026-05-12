@@ -9,11 +9,13 @@ import com.yeoljeong.tripmate.notification.presentation.dto.request.Notification
 import com.yeoljeong.tripmate.notification.presentation.dto.request.NotificationSettingRequest;
 import com.yeoljeong.tripmate.notification.presentation.dto.request.NotificationTokenRequest;
 import com.yeoljeong.tripmate.notification.presentation.dto.response.NotificationHistoryResponse;
+import com.yeoljeong.tripmate.notification.presentation.dto.response.NotificationReadUpdateStatusResponse;
 import com.yeoljeong.tripmate.notification.presentation.dto.response.NotificationSendResponse;
 import com.yeoljeong.tripmate.notification.presentation.dto.response.NotificationSettingResponse;
 import com.yeoljeong.tripmate.notification.presentation.dto.response.NotificationTokenResponse;
 import com.yeoljeong.tripmate.response.ApiResponse;
 import com.yeoljeong.tripmate.response.constants.CommonSuccessCode;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -21,6 +23,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -96,6 +99,31 @@ public class NotificationController {
                 notificationSendRequest.toCommand()
             )
         )
+    );
+  }
+
+  @PatchMapping("/{notification_history_id}/read")
+  public ApiResponse<NotificationReadUpdateStatusResponse> updateReadStatus(
+      @LoginUser UserContext userContext,
+      @PathVariable UUID notification_history_id
+  ) {
+    return ApiResponse.success(
+        CommonSuccessCode.OK,
+        NotificationReadUpdateStatusResponse.from(
+            notificationCommandService.updateReadStatus(
+                userContext.userId(), notification_history_id
+            )
+        )
+    );
+  }
+
+  @PatchMapping("/read-all")
+  public ApiResponse<Void> updateAllReadStatus(
+      @LoginUser UserContext userContext
+  ) {
+    notificationCommandService.updateAllReadStatus(userContext.userId());
+    return ApiResponse.success(
+        CommonSuccessCode.OK, null
     );
   }
 }

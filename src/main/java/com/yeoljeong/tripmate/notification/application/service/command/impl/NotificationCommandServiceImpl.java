@@ -9,9 +9,11 @@ import com.yeoljeong.tripmate.notification.application.dto.command.NotificationT
 import com.yeoljeong.tripmate.notification.application.dto.result.NotificationSendResult;
 import com.yeoljeong.tripmate.notification.application.dto.result.NotificationSettingResult;
 import com.yeoljeong.tripmate.notification.application.dto.result.NotificationTokenResult;
+import com.yeoljeong.tripmate.notification.application.dto.result.NotificationUpdateReadStatusResult;
 import com.yeoljeong.tripmate.notification.application.service.command.NotificationCommandService;
 import com.yeoljeong.tripmate.notification.application.service.command.NotificationSendService;
 import com.yeoljeong.tripmate.notification.domain.constants.TokenActiveStatus;
+import com.yeoljeong.tripmate.notification.domain.exception.NotificationHistoryErrorCode;
 import com.yeoljeong.tripmate.notification.domain.exception.NotificationSettingErrorCode;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationEndPoint;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
@@ -23,6 +25,7 @@ import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
 import com.yeoljeong.tripmate.notification.domain.model.TokenStatus;
 import com.yeoljeong.tripmate.notification.domain.repository.NotificationRepository;
 import jakarta.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -135,5 +138,24 @@ public class NotificationCommandServiceImpl implements NotificationCommandServic
                         new NotificationPayload(command.payload())
                     )).toList();
     return notificationRepository.saveAllForHistoryData(histories);
+  }
+
+  @Transactional
+  @Override
+  public NotificationUpdateReadStatusResult updateReadStatus(UUID userId,
+      UUID notificationHistoryId) {
+    NotificationHistory history = notificationRepository.findHistoryDataById(notificationHistoryId)
+        .orElseThrow(() -> new BusinessException(NotificationHistoryErrorCode.HISTORY_NOT_FOUND));
+    if (!history.getUserId().equals(userId)) {
+      throw new BusinessException(NotificationHistoryErrorCode.HISTORY_NOT_ACCESSIBLE);
+    }
+    history.markAsRead();
+    return NotificationUpdateReadStatusResult.from(history);
+  }
+  
+  @Transactional
+  @Override
+  public void updateAllReadStatus(UUID userId) {
+    notificationRepository.updateReadAllHistoryData(userId, LocalDateTime.now());
   }
 }

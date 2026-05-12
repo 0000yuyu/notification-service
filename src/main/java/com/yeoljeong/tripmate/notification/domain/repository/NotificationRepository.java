@@ -7,6 +7,7 @@ import com.yeoljeong.tripmate.notification.domain.constants.TokenActiveStatus;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationSetting;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -39,4 +40,8 @@ public interface NotificationRepository {
   );
 
   List<NotificationHistory> saveAllForHistoryData(List<NotificationHistory> histories);
+
+  Optional<NotificationHistory> findHistoryDataById(UUID notificationHistoryId);
+
+  void updateReadAllHistoryData(UUID userId, LocalDateTime now);
 }

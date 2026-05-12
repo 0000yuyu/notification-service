@@ -12,6 +12,7 @@ import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.Notifi
 import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationSettingJpaRepository;
 import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationTokenJpaRepository;
 import jakarta.persistence.criteria.Predicate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -99,5 +100,15 @@ public class NotificationRepositoryImpl implements NotificationRepository {
   @Override
   public List<NotificationHistory> saveAllForHistoryData(List<NotificationHistory> histories) {
     return notificationHistoryJpaRepository.saveAll(histories);
+  }
+
+  @Override
+  public Optional<NotificationHistory> findHistoryDataById(UUID notificationHistoryId) {
+    return notificationHistoryJpaRepository.findById(notificationHistoryId);
+  }
+
+  @Override
+  public void updateReadAllHistoryData(UUID userId, LocalDateTime now) {
+    notificationHistoryJpaRepository.markAllAsReadByUserId(userId, now);
   }
 }

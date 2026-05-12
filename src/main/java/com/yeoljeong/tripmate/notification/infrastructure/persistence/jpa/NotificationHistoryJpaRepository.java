@@ -1,6 +1,7 @@
 package com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa;
 
 import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -17,4 +18,11 @@ public interface NotificationHistoryJpaRepository extends JpaRepository<Notifica
       """)
   boolean isRead(UUID historyId);
 
+  @Modifying(clearAutomatically = true)
+  @Query("""
+      UPDATE NotificationHistory n
+      SET n.isRead = true, n.updatedAt = :now
+      WHERE n.userId = :userId AND n.isRead = false
+      """)
+  void markAllAsReadByUserId(UUID userId, LocalDateTime now);
 }

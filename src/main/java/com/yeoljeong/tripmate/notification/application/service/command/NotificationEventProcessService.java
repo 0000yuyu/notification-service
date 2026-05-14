@@ -10,9 +10,13 @@ import com.yeoljeong.tripmate.notification.application.provider.PayloadConverter
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
 import com.yeoljeong.tripmate.notification.domain.constants.TokenActiveStatus;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
+import com.yeoljeong.tripmate.notification.domain.model.NotificationSetting;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
 import com.yeoljeong.tripmate.notification.domain.repository.NotificationRepository;
+import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationHistoryJpaRepository;
+import jakarta.transaction.Transactional;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +29,9 @@ public class NotificationEventProcessService {
   private final NotificationOutboxPort notificationOutboxPort;
   private final NotificationRepository notificationRepository;
   private final PayloadConverter payloadConverter;
+  private final NotificationHistoryJpaRepository notificationHistoryJpaRepository;
 
-  public void process(EventProcessCommand processCommand) {
+  public void processSend(EventProcessCommand processCommand) {
 
     TemplateMessageResult messageResult = notificationContentProvider.build(
         processCommand.topicName(), processCommand.channelType(), processCommand.payload()
@@ -63,6 +68,11 @@ public class NotificationEventProcessService {
                     getRetryCount(processCommand.notificationType()))))
         .toList();
     notificationOutboxPort.publish(sendOutboxes);
+  }
+
+  @Transactional
+  public void processUserCreation(UUID userId) {
+    notificationRepository.saveForSettingData(NotificationSetting.createSetting(userId));
   }
 
   private int getRetryCount(NotificationType notificationType) {

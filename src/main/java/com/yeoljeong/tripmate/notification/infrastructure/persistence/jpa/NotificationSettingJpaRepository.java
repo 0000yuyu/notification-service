@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface NotificationSettingJpaRepository extends JpaRepository<NotificationSetting, UUID> {
 
+  void deleteById(UUID id);
 }

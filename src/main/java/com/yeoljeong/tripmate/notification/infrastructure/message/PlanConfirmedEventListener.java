@@ -33,7 +33,7 @@ public class PlanConfirmedEventListener {
     PlanUnitConfirmedEvent event = payloadConverter.deserialize(payload,
         PlanUnitConfirmedEvent.class);
     try {
-      notificationEventProcessService.process(
+      notificationEventProcessService.processSend(
           EventProcessCommand.builder()
               .userList(event.receivers())
               .channelType(ChannelType.PUSH)

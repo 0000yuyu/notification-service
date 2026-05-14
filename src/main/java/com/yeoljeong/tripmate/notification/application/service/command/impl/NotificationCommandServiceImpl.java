@@ -12,6 +12,7 @@ import com.yeoljeong.tripmate.notification.application.dto.result.NotificationTo
 import com.yeoljeong.tripmate.notification.application.dto.result.NotificationUpdateReadStatusResult;
 import com.yeoljeong.tripmate.notification.application.service.command.NotificationCommandService;
 import com.yeoljeong.tripmate.notification.application.service.command.NotificationSendService;
+import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
 import com.yeoljeong.tripmate.notification.domain.constants.TokenActiveStatus;
 import com.yeoljeong.tripmate.notification.domain.exception.NotificationHistoryErrorCode;
 import com.yeoljeong.tripmate.notification.domain.exception.NotificationSettingErrorCode;
@@ -152,10 +153,17 @@ public class NotificationCommandServiceImpl implements NotificationCommandServic
     history.markAsRead();
     return NotificationUpdateReadStatusResult.from(history);
   }
-  
+
   @Transactional
   @Override
   public void updateAllReadStatus(UUID userId) {
     notificationRepository.updateReadAllHistoryData(userId, LocalDateTime.now());
+  }
+
+  @Transactional
+  @Override
+  public void deleteHistoriesByScheduler() {
+    LocalDateTime cutoff = LocalDateTime.now().minusDays(30);
+    notificationRepository.deleteHistoriesByScheduler(ChannelType.PUSH, cutoff);
   }
 }

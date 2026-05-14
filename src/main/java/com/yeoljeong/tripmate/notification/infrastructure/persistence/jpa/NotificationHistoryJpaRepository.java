@@ -22,8 +22,18 @@ public interface NotificationHistoryJpaRepository extends JpaRepository<Notifica
   @Modifying(clearAutomatically = true)
   @Query("""
       UPDATE NotificationHistory n
-      SET n.isRead = true, n.updatedAt = :now
+      SET n.isRead = true, n.updatedAt = :now,n.updatedBy = n.userId
       WHERE n.userId = :userId AND n.isRead = false
       """)
   void markAllAsReadByUserId(UUID userId, LocalDateTime now);
+
+  @Modifying(clearAutomatically = true)
+  @Query("""
+      UPDATE NotificationHistory n
+      SET n.isDeleted = true, n.updatedAt = :now,n.updatedBy = :userId
+      WHERE n.userId = :userId
+      """)
+  void softDeleteAllByUserId(
+      UUID userId
+  );
 }

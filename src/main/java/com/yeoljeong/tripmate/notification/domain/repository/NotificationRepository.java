@@ -44,4 +44,12 @@ public interface NotificationRepository {
   Optional<NotificationHistory> findHistoryDataById(UUID notificationHistoryId);
 
   void updateReadAllHistoryData(UUID userId, LocalDateTime now);
+
+  List<NotificationToken> findUserTokens(UUID userId);
+
+  void deleteTokens(UUID userId);
+
+  void deleteUserSetting(UUID userId);
+
+  void softDeleteAllForHistoriesByUserId(UUID userId);
 }

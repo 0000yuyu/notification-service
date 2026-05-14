@@ -10,11 +10,15 @@ import com.yeoljeong.tripmate.notification.application.provider.PayloadConverter
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
 import com.yeoljeong.tripmate.notification.domain.constants.TokenActiveStatus;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
+import com.yeoljeong.tripmate.notification.domain.model.NotificationSetting;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
+import com.yeoljeong.tripmate.notification.domain.model.TokenStatus;
 import com.yeoljeong.tripmate.notification.domain.repository.NotificationRepository;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,7 +30,7 @@ public class NotificationEventProcessService {
   private final NotificationRepository notificationRepository;
   private final PayloadConverter payloadConverter;
 
-  public void process(EventProcessCommand processCommand) {
+  public void processSend(EventProcessCommand processCommand) {
 
     TemplateMessageResult messageResult = notificationContentProvider.build(
         processCommand.topicName(), processCommand.channelType(), processCommand.payload()
@@ -63,6 +67,25 @@ public class NotificationEventProcessService {
                     getRetryCount(processCommand.notificationType()))))
         .toList();
     notificationOutboxPort.publish(sendOutboxes);
+  }
+
+  @Transactional
+  public void processUserCreation(UUID userId) {
+    notificationRepository.saveForSettingData(NotificationSetting.createSetting(userId));
+  }
+
+  @Transactional
+  public void processUserLogout(UUID userId) {
+    List<NotificationToken> notificationTokens = notificationRepository.findUserTokens(userId);
+    notificationTokens.forEach(token -> token.updateTokenStatus(TokenStatus.inactiveInitial()));
+  }
+
+
+  @Transactional
+  public void processUserDeletion(UUID userId) {
+    notificationRepository.deleteTokens(userId);
+    notificationRepository.deleteUserSetting(userId);
+    notificationRepository.softDeleteAllForHistoriesByUserId(userId);
   }
 
   private int getRetryCount(NotificationType notificationType) {

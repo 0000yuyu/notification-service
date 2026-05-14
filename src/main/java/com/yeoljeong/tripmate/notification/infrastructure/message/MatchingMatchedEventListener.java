@@ -36,9 +36,9 @@ public class MatchingMatchedEventListener {
     MatchingMatchedEvent event = payloadConverter.deserialize(payload,
         MatchingMatchedEvent.class);
     try {
-      notificationEventProcessService.process(
+      notificationEventProcessService.processSend(
           EventProcessCommand.builder()
-              .userList(List.of(event.hostUserId()))
+              .userList(List.of(event.hostUserId(), event.mateUserId()))
               .channelType(ChannelType.PUSH)
               .topicName(MatchingTopic.MATCHING_MATCHED_TOPIC)
               .notificationType(NotificationType.MATCHING_SUCCEED)

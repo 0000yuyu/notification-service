@@ -111,4 +111,26 @@ public class NotificationRepositoryImpl implements NotificationRepository {
   public void updateReadAllHistoryData(UUID userId, LocalDateTime now) {
     notificationHistoryJpaRepository.markAllAsReadByUserId(userId, now);
   }
+
+  @Override
+  public List<NotificationToken> findUserTokens(UUID userId) {
+    return notificationTokenJpaRepository.findAllByUserId(userId);
+  }
+
+  @Override
+  public void deleteTokens(UUID userId) {
+    notificationTokenJpaRepository.deleteAllByUserId(userId);
+  }
+
+  @Override
+  public void deleteUserSetting(UUID userId) {
+    if (notificationSettingJpaRepository.existsById(userId)) {
+      notificationSettingJpaRepository.deleteById(userId);
+    }
+  }
+
+  @Override
+  public void softDeleteAllForHistoriesByUserId(UUID userId) {
+    notificationHistoryJpaRepository.softDeleteAllByUserId(userId);
+  }
 }

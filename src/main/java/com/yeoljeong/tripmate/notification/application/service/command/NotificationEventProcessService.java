@@ -1,5 +1,6 @@
 package com.yeoljeong.tripmate.notification.application.service.command;
 
+import com.yeoljeong.tripmate.domain.BaseAuditEntity;
 import com.yeoljeong.tripmate.notification.application.dto.command.EventProcessCommand;
 import com.yeoljeong.tripmate.notification.application.dto.command.NotificationHistoryCreateCommand;
 import com.yeoljeong.tripmate.notification.application.dto.command.NotificationOutboxCommand;
@@ -12,13 +13,13 @@ import com.yeoljeong.tripmate.notification.domain.constants.TokenActiveStatus;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationSetting;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
+import com.yeoljeong.tripmate.notification.domain.model.TokenStatus;
 import com.yeoljeong.tripmate.notification.domain.repository.NotificationRepository;
-import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationHistoryJpaRepository;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +30,6 @@ public class NotificationEventProcessService {
   private final NotificationOutboxPort notificationOutboxPort;
   private final NotificationRepository notificationRepository;
   private final PayloadConverter payloadConverter;
-  private final NotificationHistoryJpaRepository notificationHistoryJpaRepository;
 
   public void processSend(EventProcessCommand processCommand) {
 
@@ -73,6 +73,21 @@ public class NotificationEventProcessService {
   @Transactional
   public void processUserCreation(UUID userId) {
     notificationRepository.saveForSettingData(NotificationSetting.createSetting(userId));
+  }
+
+  @Transactional
+  public void processUserLogout(UUID userId) {
+    List<NotificationToken> notificationTokens = notificationRepository.findUserTokens(userId);
+    notificationTokens.forEach(token -> token.updateTokenStatus(TokenStatus.inactiveInitial()));
+  }
+
+
+  @Transactional
+  public void processUserDeletion(UUID userId) {
+    notificationRepository.deleteTokens(userId);
+    notificationRepository.deleteUserSetting(userId);
+    List<NotificationHistory> histories = notificationRepository.findHistoryDataByUserId(userId);
+    histories.forEach(BaseAuditEntity::softDelete);
   }
 
   private int getRetryCount(NotificationType notificationType) {

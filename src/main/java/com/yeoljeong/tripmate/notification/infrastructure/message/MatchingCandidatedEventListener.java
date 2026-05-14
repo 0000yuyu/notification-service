@@ -35,7 +35,7 @@ public class MatchingCandidatedEventListener {
     MatchingCandidatesFoundEvent event = payloadConverter.deserialize(payload,
         MatchingCandidatesFoundEvent.class);
     try {
-      notificationEventProcessService.process(
+      notificationEventProcessService.processSend(
           EventProcessCommand.builder()
               .userList(event.userIds())
               .channelType(ChannelType.PUSH)

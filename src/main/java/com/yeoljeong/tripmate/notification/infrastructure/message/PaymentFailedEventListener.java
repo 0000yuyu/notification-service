@@ -33,7 +33,7 @@ public class PaymentFailedEventListener {
     PaymentFailedEvent event = payloadConverter.deserialize(payload,
         PaymentFailedEvent.class);
     try {
-      notificationEventProcessService.process(
+      notificationEventProcessService.processSend(
           EventProcessCommand.builder()
               .userList(List.of(event.userId()))
               .channelType(ChannelType.PUSH)
@@ -43,7 +43,7 @@ public class PaymentFailedEventListener {
               .eventHash(event.eventHash())
               .payload(objectMapper.valueToTree(event)).build());
 
-      notificationEventProcessService.process(
+      notificationEventProcessService.processSend(
           EventProcessCommand.builder()
               .userList(List.of(event.userId()))
               .channelType(ChannelType.EMAIL)

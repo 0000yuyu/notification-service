@@ -129,6 +129,8 @@ public class NotificationRepositoryImpl implements NotificationRepository {
 
   @Override
   public void deleteUserSetting(UUID userId) {
-    notificationSettingJpaRepository.deleteById(userId);
+    if (notificationSettingJpaRepository.existsById(userId)) {
+      notificationSettingJpaRepository.deleteById(userId);
+    }
   }
 }

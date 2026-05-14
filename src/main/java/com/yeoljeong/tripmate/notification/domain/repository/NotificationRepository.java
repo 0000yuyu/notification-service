@@ -52,4 +52,7 @@ public interface NotificationRepository {
   void deleteUserSetting(UUID userId);
 
   void softDeleteAllForHistoriesByUserId(UUID userId);
+
+  void deleteHistoriesByScheduler(ChannelType channelType,
+      LocalDateTime cutoff);
 }

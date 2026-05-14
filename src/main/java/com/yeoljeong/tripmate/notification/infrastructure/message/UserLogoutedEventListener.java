@@ -14,9 +14,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class UserLogoutedEventListener {
+class UserLogoutEventListener {
 
-  private static final Logger log = LogManager.getLogger(UserLogoutedEventListener.class);
+  private static final Logger log = LogManager.getLogger(UserLogoutEventListener.class);
   private final PayloadConverter payloadConverter;
   private final NotificationEventProcessService notificationEventProcessService;
 

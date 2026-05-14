@@ -38,7 +38,7 @@ public class MatchingMatchedEventListener {
     try {
       notificationEventProcessService.processSend(
           EventProcessCommand.builder()
-              .userList(List.of(event.hostUserId()))
+              .userList(List.of(event.hostUserId(), event.mateUserId()))
               .channelType(ChannelType.PUSH)
               .topicName(MatchingTopic.MATCHING_MATCHED_TOPIC)
               .notificationType(NotificationType.MATCHING_SUCCEED)

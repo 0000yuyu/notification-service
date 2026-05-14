@@ -137,7 +137,7 @@ public class NotificationRepositoryImpl implements NotificationRepository {
   @Override
   public void deleteHistoriesByScheduler(ChannelType channelType,
       LocalDateTime cutoff) {
-    notificationHistoryJpaRepository.deleteAllNotificationSource_ChannelTypeAndCreatedAtBefore(
+    notificationHistoryJpaRepository.deleteAllByNotificationSource_ChannelTypeAndCreatedAtBefore(
         channelType, cutoff);
   }
 }

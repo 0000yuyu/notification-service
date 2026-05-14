@@ -38,6 +38,6 @@ public interface NotificationHistoryJpaRepository extends JpaRepository<Notifica
       UUID userId
   );
 
-  void deleteAllNotificationSource_ChannelTypeAndCreatedAtBefore(ChannelType channelType,
+  void deleteAllByNotificationSource_ChannelTypeAndCreatedAtBefore(ChannelType channelType,
       LocalDateTime cutoff);
 }

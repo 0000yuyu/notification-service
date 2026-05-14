@@ -1,4 +1,4 @@
-package com.yeoljeong.tripmate.notification.infrastructure.persistence.outbox;
+package com.yeoljeong.tripmate.notification.infrastructure.schedulers;
 
 import com.yeoljeong.tripmate.notification.application.dto.command.NotificationSendEachCommand;
 import com.yeoljeong.tripmate.notification.application.dto.command.NotificationSendTarget;
@@ -12,6 +12,8 @@ import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
 import com.yeoljeong.tripmate.notification.infrastructure.dto.TemplateMessage;
 import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationHistoryJpaRepository;
 import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationTokenJpaRepository;
+import com.yeoljeong.tripmate.notification.infrastructure.persistence.outbox.NotificationSendOutbox;
+import com.yeoljeong.tripmate.notification.infrastructure.persistence.outbox.NotificationSendOutboxJpaRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -19,7 +21,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.support.TransactionTemplate;

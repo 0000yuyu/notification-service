@@ -1,5 +1,6 @@
 package com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa;
 
+import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -36,4 +37,7 @@ public interface NotificationHistoryJpaRepository extends JpaRepository<Notifica
   void softDeleteAllByUserId(
       UUID userId
   );
+
+  void deleteAllNotificationSource_ChannelTypeAndCreatedAtBefore(ChannelType channelType,
+      LocalDateTime cutoff);
 }

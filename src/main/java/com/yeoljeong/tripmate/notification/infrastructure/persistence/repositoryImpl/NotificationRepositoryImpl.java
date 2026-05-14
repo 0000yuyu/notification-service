@@ -133,4 +133,11 @@ public class NotificationRepositoryImpl implements NotificationRepository {
   public void softDeleteAllForHistoriesByUserId(UUID userId) {
     notificationHistoryJpaRepository.softDeleteAllByUserId(userId);
   }
+
+  @Override
+  public void deleteHistoriesByScheduler(ChannelType channelType,
+      LocalDateTime cutoff) {
+    notificationHistoryJpaRepository.deleteAllNotificationSource_ChannelTypeAndCreatedAtBefore(
+        channelType, cutoff);
+  }
 }

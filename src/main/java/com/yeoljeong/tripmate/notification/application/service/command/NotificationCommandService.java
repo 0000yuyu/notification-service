@@ -27,4 +27,6 @@ public interface NotificationCommandService {
   NotificationUpdateReadStatusResult updateReadStatus(UUID uuid, UUID notificationHistoryId);
 
   void updateAllReadStatus(UUID uuid);
+
+  void deleteHistoriesByScheduler();
 }

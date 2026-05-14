@@ -56,4 +56,5 @@ public interface NotificationTokenJpaRepository extends JpaRepository<Notificati
             )
       """)
   boolean isSendableToken(UUID tokenId);
+  
 }

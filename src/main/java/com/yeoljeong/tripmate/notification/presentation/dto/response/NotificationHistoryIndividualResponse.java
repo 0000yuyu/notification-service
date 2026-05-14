@@ -2,11 +2,13 @@ package com.yeoljeong.tripmate.notification.presentation.dto.response;
 
 import com.yeoljeong.tripmate.notification.application.dto.result.NotificationHistoryIndividualResult;
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
+import java.util.UUID;
 import lombok.Builder;
 
 @Builder
 public record NotificationHistoryIndividualResponse(
     NotificationType notificationType,
+    UUID id,
     String title,
     String content,
     String redirectUrl,
@@ -17,6 +19,7 @@ public record NotificationHistoryIndividualResponse(
       NotificationHistoryIndividualResult result) {
     return NotificationHistoryIndividualResponse.builder()
         .notificationType(result.notificationType())
+        .id(result.historyId())
         .title(result.title())
         .content(result.content())
         .redirectUrl(result.redirectUrl())

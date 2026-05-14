@@ -49,7 +49,7 @@ public interface NotificationRepository {
 
   void deleteTokens(UUID userId);
 
-  List<NotificationHistory> findHistoryDataByUserId(UUID userId);
-
   void deleteUserSetting(UUID userId);
+
+  void softDeleteAllForHistoriesByUserId(UUID userId);
 }

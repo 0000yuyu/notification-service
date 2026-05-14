@@ -123,14 +123,14 @@ public class NotificationRepositoryImpl implements NotificationRepository {
   }
 
   @Override
-  public List<NotificationHistory> findHistoryDataByUserId(UUID userId) {
-    return notificationHistoryJpaRepository.findAllByUserId(userId);
-  }
-
-  @Override
   public void deleteUserSetting(UUID userId) {
     if (notificationSettingJpaRepository.existsById(userId)) {
       notificationSettingJpaRepository.deleteById(userId);
     }
+  }
+
+  @Override
+  public void softDeleteAllForHistoriesByUserId(UUID userId) {
+    notificationHistoryJpaRepository.softDeleteAllByUserId(userId);
   }
 }

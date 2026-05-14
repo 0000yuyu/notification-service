@@ -1,6 +1,5 @@
 package com.yeoljeong.tripmate.notification.application.service.command;
 
-import com.yeoljeong.tripmate.domain.BaseAuditEntity;
 import com.yeoljeong.tripmate.notification.application.dto.command.EventProcessCommand;
 import com.yeoljeong.tripmate.notification.application.dto.command.NotificationHistoryCreateCommand;
 import com.yeoljeong.tripmate.notification.application.dto.command.NotificationOutboxCommand;
@@ -86,8 +85,7 @@ public class NotificationEventProcessService {
   public void processUserDeletion(UUID userId) {
     notificationRepository.deleteTokens(userId);
     notificationRepository.deleteUserSetting(userId);
-    List<NotificationHistory> histories = notificationRepository.findHistoryDataByUserId(userId);
-    histories.forEach(BaseAuditEntity::softDelete);
+    notificationRepository.softDeleteAllForHistoriesByUserId(userId);
   }
 
   private int getRetryCount(NotificationType notificationType) {

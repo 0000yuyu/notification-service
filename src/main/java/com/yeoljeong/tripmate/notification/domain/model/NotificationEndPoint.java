@@ -23,7 +23,7 @@ public class NotificationEndPoint {
           "(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
   private static final Pattern pattern = Pattern.compile(EMAIL_PATTERN);
 
-  @Column(nullable = false)
+  @Column()
   @Enumerated(EnumType.STRING)
   private ChannelType channelType;
 
@@ -34,7 +34,7 @@ public class NotificationEndPoint {
   @Column()
   private String deviceId;
 
-  @Column(nullable = false)
+  @Column()
   private String tokenValue;
 
   @Builder
@@ -58,7 +58,6 @@ public class NotificationEndPoint {
     }
     return null;
   }
-
 
   private static boolean validate(ChannelType channelType, String deviceId, DeviceType deviceType,
       String tokenValue) {

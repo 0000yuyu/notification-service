@@ -60,12 +60,13 @@ public class NotificationToken extends BaseAuditEntity {
     return notificationEndPoint.getTokenValue();
   }
 
-  public void updateTokenStatus(TokenStatus tokenStatus) {
-    this.tokenStatus = tokenStatus;
+  public void tokenInActive() {
+    this.notificationEndPoint = null;
+    this.tokenStatus = TokenStatus.inactiveInitial();
   }
 
-  public boolean isTokenUsable() {
-    return tokenStatus.isUsable();
+  public void updateTokenStatus(TokenStatus tokenStatus) {
+    this.tokenStatus = tokenStatus;
   }
 
   public void updateTokenEndpoint(NotificationEndPoint endPoint) {

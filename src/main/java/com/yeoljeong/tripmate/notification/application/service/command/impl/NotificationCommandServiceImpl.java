@@ -88,7 +88,7 @@ public class NotificationCommandServiceImpl implements NotificationCommandServic
         .findTokenDataByTokenValue(tokenValue)
         .ifPresent(existingToken -> {
           if (!existingToken.getUserId().equals(userId)) {
-            existingToken.updateTokenStatus(TokenStatus.inactiveInitial());
+            existingToken.tokenInActive();
             notificationRepository.saveForTokenData(existingToken);
           }
         });

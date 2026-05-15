@@ -55,4 +55,6 @@ public interface NotificationRepository {
 
   void deleteHistoriesByScheduler(ChannelType channelType,
       LocalDateTime cutoff);
+
+  void deleteTokenByTokenId(UUID tokenId);
 }

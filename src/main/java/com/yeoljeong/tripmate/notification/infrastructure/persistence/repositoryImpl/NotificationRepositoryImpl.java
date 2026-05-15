@@ -140,4 +140,9 @@ public class NotificationRepositoryImpl implements NotificationRepository {
     notificationHistoryJpaRepository.deleteAllByNotificationSource_ChannelTypeAndCreatedAtBefore(
         channelType, cutoff);
   }
+
+  @Override
+  public void deleteTokenByTokenId(UUID tokenId) {
+    notificationTokenJpaRepository.deleteById(tokenId);
+  }
 }

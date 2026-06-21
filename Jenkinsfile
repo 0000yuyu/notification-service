@@ -6,11 +6,10 @@ pipeline {
     }
 
     environment {
-        DOCKER_IMAGE = 'sunsik17/tripmate-notification'
+        DOCKER_IMAGE = 'yujsong/tripmate-notification'
         DOCKER_TAG = 'latest'
         CONTAINER_NAME = 'notification-service'
-        NOTIFICATION_EC2_IP = '172.31.35.239'
-        PEM_PATH = '/var/lib/jenkins/tripmate.pem'
+        TARGET_SERVER_IP = '10.0.0.2'
     }
 
     stages {
@@ -36,7 +35,7 @@ pipeline {
         stage('Docker Build & Push') {
             steps {
                 withCredentials([usernamePassword(
-                        credentialsId: 'docker-account',
+                        credentialsId: 'docker-token',
                         usernameVariable: 'DOCKER_USERNAME',
                         passwordVariable: 'DOCKER_PASSWORD'
                 )]) {
@@ -51,26 +50,30 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh """
-                    ssh -i ${PEM_PATH} -o StrictHostKeyChecking=no ec2-user@${NOTIFICATION_EC2_IP} '
-                        docker pull ${DOCKER_IMAGE}:${DOCKER_TAG}
-                        docker stop notification-service || true
-                        docker rm notification-service || true
-                        docker run -d \\
-                            --name notification-service \\
-                            --env-file /home/ec2-user/.env \\
-                            -e SPRING_PROFILES_ACTIVE=prod \\
-                            -p 8080:8080 \\
-                            ${DOCKER_IMAGE}:${DOCKER_TAG}
-                    '
-                """
+                sshagent(credentials: ['gcp-ssh-key']) {
+                    sh """
+                        ssh -o StrictHostKeyChecking=no g0000yuyu510@${TARGET_SERVER_IP} "
+                            docker pull ${DOCKER_IMAGE}:${DOCKER_TAG}
+                            docker stop ${CONTAINER_NAME} || true
+                            docker rm ${CONTAINER_NAME} || true
+                            docker run -d \
+                                --name ${CONTAINER_NAME} \
+                                --env-file /home/g0000yuyu510/.env \
+                                -e SPRING_PROFILES_ACTIVE=prod \
+                                -p 8080:8080 \
+                                ${DOCKER_IMAGE}:${DOCKER_TAG}
+                        "
+                    """
+                }
             }
         }
     }
 
     post {
         always {
-            cleanWs()
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE') {
+                cleanWs()
+            }
             sh 'docker system prune -f'
         }
         success {

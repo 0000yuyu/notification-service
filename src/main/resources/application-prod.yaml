@@ -43,17 +43,19 @@ spring:
     max-attempts: 3
 firebase:
   service-key: ${FIREBASE_SERVICE_KEY}
+
 eureka:
   client:
     service-url:
       defaultZone: ${EUREKA_SERVER_URL}
       fetch-registry: true
   instance:
+    instance-id: ${spring.application.name}:${random.value}:${server.port}
     hostname: ${EUREKA_INSTANCE_NAME}
-    non-secure-port: 8080
+    non-secure-port: ${server.port}
     non-secure-port-enabled: true
     secure-port-enabled: false
-    prefer-ip-address: false
+    prefer-ip-address: true
 
 management:
   endpoints:

@@ -7,11 +7,13 @@ import com.yeoljeong.tripmate.notification.application.dto.command.EventProcessC
 import com.yeoljeong.tripmate.notification.application.service.command.NotificationEventProcessService;
 import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
+import com.yeoljeong.tripmate.notification.infrastructure.config.kafka.KafkaPayloadDeserializer;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -21,14 +23,16 @@ public class MatchingCandidatedEventListener {
   private static final Logger log = LogManager.getLogger(MatchingCandidatedEventListener.class);
   private final ObjectMapper objectMapper;
   private final NotificationEventProcessService notificationEventProcessService;
+  private final KafkaPayloadDeserializer kafkaPayloadDeserializer;
 
   @KafkaListener
       (
           topics = MatchingTopic.MATCHING_CANDIDATES_FOUND_TOPIC,
-          groupId = "notification-group",
           containerFactory = "kafkaListenerContainerFactory"
       )
-  public void create(MatchingCandidatesFoundEvent event, Acknowledgment ack) {
+  public void create(@Payload String payload, Acknowledgment ack) {
+    MatchingCandidatesFoundEvent event = kafkaPayloadDeserializer.deserialize(payload,
+        MatchingCandidatesFoundEvent.class);
     try {
       notificationEventProcessService.process(
           EventProcessCommand.builder()

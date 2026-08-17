@@ -60,7 +60,7 @@ pipeline {
                                 --name ${CONTAINER_NAME} \
                                 --network host \
                                 --env-file /home/g0000yuyu510/.env \
-                                -e SPRING_PROFILES_ACTIVE=prod \
+                                -e SPRING_PROFILES_ACTIVE=test \
                                 -e EUREKA_INSTANCE_PREFER_IP_ADDRESS=true \
                                 -e EUREKA_INSTANCE_NON_SECURE_PORT='\\\${server.port}' \
                                 -e EUREKA_INSTANCE_INSTANCE_ID='\\\${spring.application.name}:\\\${server.port}:\\\${random.value}' \

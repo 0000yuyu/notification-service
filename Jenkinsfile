@@ -6,9 +6,9 @@ pipeline {
     }
 
     environment {
-        DOCKER_IMAGE = 'yujsong/tripmate-notification-service'
+        DOCKER_IMAGE = 'yujsong/tripmate-notification-service-perf'
         DOCKER_TAG = 'latest'
-        CONTAINER_NAME = 'notification-service'
+        CONTAINER_NAME = 'notification-service-perf'
         TARGET_SERVER_IP = '10.0.0.2'
     }
 

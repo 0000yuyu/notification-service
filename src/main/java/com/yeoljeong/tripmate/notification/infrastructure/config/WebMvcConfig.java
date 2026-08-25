@@ -3,13 +3,13 @@ package com.yeoljeong.tripmate.notification.infrastructure.config;
 import com.yeoljeong.tripmate.auth.context.LoginUserArgumentResolver;
 import com.yeoljeong.tripmate.auth.context.UserContextInterceptor;
 import java.util.List;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.stereotype.Component;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-@Configuration
+@Component("customWebMvcConfig")
 @Primary
 public class WebMvcConfig implements WebMvcConfigurer {
 

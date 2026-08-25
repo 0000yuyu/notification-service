@@ -41,6 +41,8 @@ spring:
   retry:
     interval: 1000
     max-attempts: 3
+  main:
+    allow-bean-definition-overriding: true
 firebase:
   service-key: ${FIREBASE_SERVICE_KEY}
 

@@ -36,7 +36,7 @@ public class NotificationContentProvider implements NotificationContentBuilder {
     try {
       JsonNode config;
       Resource jsonRes = resourceLoader.getResource(
-          TEMPLATE_PREFIX + channelType.name().toLowerCase() + "." + topicName + ".json");
+          TEMPLATE_PREFIX + channelType.name().toUpperCase() + "." + topicName + ".json");
 
       try (var is = jsonRes.getInputStream()) {
         config = objectMapper.readTree(is);

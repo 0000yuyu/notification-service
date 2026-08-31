@@ -21,11 +21,11 @@ import java.util.List;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
-@Service
-@Profile("Not")
+@Component
+@Profile("prod")
 public class FcmNotificationAdapter implements NotificationSender {
 
   private MulticastMessage createMulticastMessage(NotificationSendMulticastCommand command) {

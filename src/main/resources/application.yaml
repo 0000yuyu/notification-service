@@ -13,6 +13,16 @@ spring:
       - kafka
   main:
     allow-bean-definition-overriding: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+
+  endpoint:
+    prometheus:
+      access: unrestricted
 logging:
   level:
     org.hibernate.orm.jdbc.bind: TRACE

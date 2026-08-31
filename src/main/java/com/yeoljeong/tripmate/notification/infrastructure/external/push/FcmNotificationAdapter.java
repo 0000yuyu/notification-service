@@ -18,11 +18,11 @@ import java.util.List;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
-@Service
-@Profile("prod")
+@Component
+@Profile("not")
 public class FcmNotificationAdapter implements NotificationSender {
 
   private MulticastMessage createMessage(NotificationSendMessage message) {

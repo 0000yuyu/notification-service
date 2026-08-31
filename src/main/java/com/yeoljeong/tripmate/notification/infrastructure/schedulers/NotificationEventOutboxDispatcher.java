@@ -8,12 +8,14 @@ import com.yeoljeong.tripmate.notification.application.provider.PayloadConverter
 import com.yeoljeong.tripmate.notification.application.service.command.NotificationSendService;
 import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationResultStatus;
+import com.yeoljeong.tripmate.notification.domain.model.NotificationHistory;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
 import com.yeoljeong.tripmate.notification.infrastructure.dto.TemplateMessage;
 import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationHistoryJpaRepository;
 import com.yeoljeong.tripmate.notification.infrastructure.persistence.jpa.NotificationTokenJpaRepository;
 import com.yeoljeong.tripmate.notification.infrastructure.persistence.outbox.NotificationSendOutbox;
 import com.yeoljeong.tripmate.notification.infrastructure.persistence.outbox.NotificationSendOutboxJpaRepository;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -87,6 +89,8 @@ public class NotificationEventOutboxDispatcher {
       return;
     }
 
+
+
     Map<UUID, String> tokenMap = notificationTokenJpaRepository
         .findAllByIdIn(targetOutboxes.stream().map(NotificationSendOutbox::getTokenId).toList())
         .stream()
@@ -105,10 +109,59 @@ public class NotificationEventOutboxDispatcher {
         }
     ).toList();
 
+    Map<UUID, String> eventHashMap = notificationHistoryJpaRepository
+        .findAllById(
+            targetOutboxes.stream()
+                .map(NotificationSendOutbox::getHistoryId)
+                .toList()
+        )
+        .stream()
+        .collect(Collectors.toMap(
+            NotificationHistory::getId,
+            history -> history.getNotificationSource().getEventHash()
+        ));
+
+    Instant sendStartedAt = Instant.now();
+
+    targetOutboxes.forEach(outbox ->
+        log.info(
+            "[PERF] eventHash={} stage=FCM_SEND_STARTED timestamp={}",
+            eventHashMap.get(outbox.getHistoryId()),
+            sendStartedAt
+        )
+    );
+
+
     NotificationSendResult result = notificationSendService.sendEach(
         NotificationSendEachCommand.builder().channelType(channelType).targets(targets).build());
 
     log.info("토큰 발송 결과 : 개수 : {}, {}", result.results().size(), result.results());
+
+    Instant sendFinishedAt = Instant.now();
+
+    for (int i = 0; i < targetOutboxes.size(); i++) {
+      NotificationIndividualResult individualResult = result.results().get(i);
+      NotificationSendOutbox outbox = targetOutboxes.get(i);
+
+      if (individualResult.isSuccess()) {
+        log.info(
+            "[PERF] eventHash={} stage=FCM_SEND_SUCCESS timestamp={}",
+            eventHashMap.get(outbox.getHistoryId()),
+            sendFinishedAt
+        );
+
+        outbox.published();
+
+      } else {
+        log.info(
+            "[PERF] eventHash={} stage=FCM_SEND_FAILED timestamp={}",
+            eventHashMap.get(outbox.getHistoryId()),
+            sendFinishedAt
+        );
+
+        outbox.fail(individualResult.errorMessage());
+      }
+    }
 
     transactionTemplate.executeWithoutResult(status -> {
           for (int i = 0; i < targetOutboxes.size(); i++) {

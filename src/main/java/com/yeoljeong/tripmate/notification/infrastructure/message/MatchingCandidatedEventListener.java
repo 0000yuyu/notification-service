@@ -8,6 +8,7 @@ import com.yeoljeong.tripmate.notification.application.provider.PayloadConverter
 import com.yeoljeong.tripmate.notification.application.service.command.NotificationEventProcessService;
 import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
+import java.time.Instant;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Component;
 public class MatchingCandidatedEventListener {
 
   private static final Logger log = LogManager.getLogger(MatchingCandidatedEventListener.class);
+  private static final Logger perfLog = LogManager.getLogger("PERF");
   private final ObjectMapper objectMapper;
   private final NotificationEventProcessService notificationEventProcessService;
   private final PayloadConverter payloadConverter;
@@ -34,6 +36,13 @@ public class MatchingCandidatedEventListener {
   public void create(@Payload String payload, Acknowledgment ack) {
     MatchingCandidatesFoundEvent event = payloadConverter.deserialize(payload,
         MatchingCandidatesFoundEvent.class);
+
+    perfLog.info(
+        "eventHash={} stage=CONSUMER_RECEIVED timestamp={}",
+        event.eventHash(),
+        Instant.now()
+    );
+
     try {
       notificationEventProcessService.processSend(
           EventProcessCommand.builder()

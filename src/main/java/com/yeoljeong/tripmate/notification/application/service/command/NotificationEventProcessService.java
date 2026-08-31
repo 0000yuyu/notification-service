@@ -14,15 +14,19 @@ import com.yeoljeong.tripmate.notification.domain.model.NotificationSetting;
 import com.yeoljeong.tripmate.notification.domain.model.NotificationToken;
 import com.yeoljeong.tripmate.notification.domain.model.TokenStatus;
 import com.yeoljeong.tripmate.notification.domain.repository.NotificationRepository;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NotificationEventProcessService {
+
 
   private final NotificationContentProvider notificationContentProvider;
   private final NotificationCommandService notificationCommandService;
@@ -66,6 +70,12 @@ public class NotificationEventProcessService {
                     payloadConverter.serialize(messageResult),
                     getRetryCount(processCommand.notificationType()))))
         .toList();
+
+    log.info(
+        "[PERF] eventHash={} stage=FCM_OUTBOX_SAVED timestamp={}",
+        processCommand.eventHash(),
+        Instant.now()
+    );
     notificationOutboxPort.publish(sendOutboxes);
   }
 

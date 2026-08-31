@@ -17,6 +17,12 @@ logging:
   level:
     org.hibernate.orm.jdbc.bind: TRACE
 management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
   endpoint:
+    health:
+      show-details: always
     prometheus:
       access: unrestricted

@@ -11,6 +11,8 @@ spring:
       - firebase
       - mail
       - kafka
+  main:
+    allow-bean-definition-overriding: true
 logging:
   level:
     org.hibernate.orm.jdbc.bind: TRACE

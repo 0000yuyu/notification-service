@@ -10,8 +10,7 @@ import com.yeoljeong.tripmate.notification.domain.constants.ChannelType;
 import com.yeoljeong.tripmate.notification.domain.constants.NotificationType;
 import java.time.Instant;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -19,10 +18,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class MatchingCandidatedEventListener {
 
-  private static final Logger log = LogManager.getLogger(MatchingCandidatedEventListener.class);
-  private static final Logger perfLog = LogManager.getLogger("PERF");
   private final ObjectMapper objectMapper;
   private final NotificationEventProcessService notificationEventProcessService;
   private final PayloadConverter payloadConverter;
@@ -37,8 +35,8 @@ public class MatchingCandidatedEventListener {
     MatchingCandidatesFoundEvent event = payloadConverter.deserialize(payload,
         MatchingCandidatesFoundEvent.class);
 
-    perfLog.info(
-        "eventHash={} stage=CONSUMER_RECEIVED timestamp={}",
+    log.info(
+        "[PERF] eventHash={} stage=CONSUMER_RECEIVED timestamp={}",
         event.eventHash(),
         Instant.now()
     );

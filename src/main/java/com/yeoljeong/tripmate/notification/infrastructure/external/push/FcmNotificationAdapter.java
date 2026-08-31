@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
-@Profile({"local", "test"})
+@Profile("prod")
 public class FcmNotificationAdapter implements NotificationSender {
 
   private MulticastMessage createMulticastMessage(NotificationSendMulticastCommand command) {

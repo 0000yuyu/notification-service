@@ -18,8 +18,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class MockFcmNotificationAdapter implements NotificationSender {
 
-  private static final long MIN_DELAY_MS = 450;
-  private static final long MAX_DELAY_MS = 550;
+  private static final long MIN_DELAY_MS = 900;
+  private static final long MAX_DELAY_MS = 1100;
 
   @Override
   public NotificationSendResult sendEach(NotificationSendEachCommand command) {

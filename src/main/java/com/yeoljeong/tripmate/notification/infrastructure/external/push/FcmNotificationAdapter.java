@@ -20,12 +20,8 @@ import com.yeoljeong.tripmate.notification.domain.exception.NotificationSendErro
 import java.util.List;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
-@Component
-@Profile("prod")
 public class FcmNotificationAdapter implements NotificationSender {
 
   private MulticastMessage createMulticastMessage(NotificationSendMulticastCommand command) {
@@ -106,7 +102,7 @@ public class FcmNotificationAdapter implements NotificationSender {
 
   @Override
   public boolean supports(ChannelType type) {
-    return type == ChannelType.PUSH;
+    return false;
   }
 
   private void handleFcmException(FirebaseMessagingException e) {

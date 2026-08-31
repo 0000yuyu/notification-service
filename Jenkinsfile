@@ -9,7 +9,7 @@ pipeline {
         DOCKER_IMAGE = 'yujsong/tripmate-notification-service'
         DOCKER_TAG = 'latest'
         CONTAINER_NAME = 'notification-service'
-        TARGET_SERVER_IP = '10.0.0.10'
+        TARGET_SERVER_IP = '10.0.0.2'
     }
 
     stages {

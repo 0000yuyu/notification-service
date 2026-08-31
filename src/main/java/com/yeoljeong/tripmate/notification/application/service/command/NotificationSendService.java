@@ -6,15 +6,28 @@ import com.yeoljeong.tripmate.notification.application.dto.command.NotificationS
 import com.yeoljeong.tripmate.notification.application.dto.command.NotificationSendMulticastCommand;
 import com.yeoljeong.tripmate.notification.application.dto.result.NotificationSendResult;
 import com.yeoljeong.tripmate.notification.application.provider.NotificationSender;
+import jakarta.annotation.PostConstruct;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class NotificationSendService {
 
   private final List<NotificationSender> senders;
+
+  @PostConstruct
+  public void checkSenders() {
+    senders.forEach(sender ->
+        log.warn(
+            "[SENDER-BEAN] class={}",
+            sender.getClass().getName()
+        )
+    );
+  }
 
   public NotificationSendResult sendMulticast(NotificationSendMulticastCommand command) {
     NotificationSender sender = senders.stream()

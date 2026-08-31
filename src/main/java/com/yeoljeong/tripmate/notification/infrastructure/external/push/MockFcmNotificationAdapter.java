@@ -11,13 +11,11 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
-@Profile({"local", "test"})
 public class MockFcmNotificationAdapter implements NotificationSender {
 
   private static final long MIN_DELAY_MS = 80;
@@ -43,6 +41,7 @@ public class MockFcmNotificationAdapter implements NotificationSender {
 
     simulateExternalDelay();
 
+    log.info("mock 발송 !!");
     List<NotificationIndividualResult> results =
         IntStream.range(0, command.targetTokens().size())
             .mapToObj(NotificationIndividualResult::success)

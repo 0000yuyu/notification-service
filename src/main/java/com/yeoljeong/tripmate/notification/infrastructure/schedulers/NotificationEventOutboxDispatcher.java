@@ -89,8 +89,6 @@ public class NotificationEventOutboxDispatcher {
       return;
     }
 
-
-
     Map<UUID, String> tokenMap = notificationTokenJpaRepository
         .findAllByIdIn(targetOutboxes.stream().map(NotificationSendOutbox::getTokenId).toList())
         .stream()
@@ -130,7 +128,6 @@ public class NotificationEventOutboxDispatcher {
             sendStartedAt
         )
     );
-
 
     NotificationSendResult result = notificationSendService.sendEach(
         NotificationSendEachCommand.builder().channelType(channelType).targets(targets).build());
